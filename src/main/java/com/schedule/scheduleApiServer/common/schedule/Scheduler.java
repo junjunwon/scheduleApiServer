@@ -20,7 +20,6 @@ import java.util.List;
 @Component
 public class Scheduler {
 
-//    private final ClassPathResource resource = new ClassPathResource("files/inputList.txt");
     private static final Path path = Paths.get("src/main//resources/files/inputList.txt");
 
     private static final String NEWLINE = System.lineSeparator();
@@ -48,9 +47,8 @@ public class Scheduler {
             stringBuffer.append(map.get(fileExtension));
             stringBuffer.append("]");
             delimiter = stringBuffer.toString();
-//            Path path = Paths.get(resource.getURI());
+
             List<String> contentList = Files.readAllLines(path);
-//            List<String> contentLine = new ArrayList<>();
             contentList.forEach((content) -> {
                 String[] contentLine = content.split(delimiter);
                 //값이 누락된 경우
@@ -59,20 +57,41 @@ public class Scheduler {
                     return;
                 }
                 //db에 저장
-                System.out.println(contentLine);
             });
         } catch (IOException e) {
+            e.printStackTrace();
         }
     }
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(cron = "0 0 0/1 * * *") //1시간마다 도는 스케줄러
     public void writeValueInFile() {
-        appendWriteToFile(path, NEWLINE+"2022-07-22 01|32|4|45100|27300|95000");
-
+        int i = 0;
+        while(i<24) {
+            appendWriteToFile(path, NEWLINE+"2022-07-22 01|32|4|45100|27300|95000");
+            i++;
+        }
     }
 
+    /**
+     * get 파일 확장자
+     *
+     * @author jh.won
+     * @since 2022.0819
+     * @param fileName
+     * @return
+     */
     private String getExtensionByGuava(String fileName) {
         return com.google.common.io.Files.getFileExtension(fileName);
     }
+
+
+    /**
+     * 파일이 없을 경우 생성 혹은 line 추가
+     *
+     * @author jh.won
+     * @since 2022.08.19
+     * @param path
+     * @param line
+     */
     private void appendWriteToFile(Path path, String line) {
         try {
             Files.write(path, line.getBytes(StandardCharsets.UTF_8),
