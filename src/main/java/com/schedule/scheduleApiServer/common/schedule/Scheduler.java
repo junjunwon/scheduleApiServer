@@ -4,48 +4,83 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 @Component
 public class Scheduler {
 
+//    private final ClassPathResource resource = new ClassPathResource("files/inputList.txt");
+    private static final Path path = Paths.get("src/main//resources/files/inputList.txt");
+
+    private static final String NEWLINE = System.lineSeparator();
     private final HashMap<String, String> map = new HashMap<>();
     private String fileExtension = "";
     private String delimiter = "";
+
     public Scheduler() {
         map.put("txt", "|");
         map.put("csv", ",");
     }
 
     //    @Scheduled(cron = "0 0 00 * * *", zone = "Asia/Seoul")
-    @Scheduled(fixedRate = 100000)
+    @Scheduled(fixedRate = 10000)
     public void getFileListScheduler() {
 
-        ClassPathResource resource = new ClassPathResource("files/inputList.txt");
+
+        StringBuffer stringBuffer = new StringBuffer();
         try {
 
             //확장자 추출
-            fileExtension = getExtensionByGuava(resource.getFilename());
+            fileExtension = getExtensionByGuava(path.getFileName().toString());
             //구분자 추출
-            delimiter = map.get(fileExtension);
-
-            Path path = Paths.get(resource.getURI());
+            stringBuffer.append("[");
+            stringBuffer.append(map.get(fileExtension));
+            stringBuffer.append("]");
+            delimiter = stringBuffer.toString();
+//            Path path = Paths.get(resource.getURI());
             List<String> contentList = Files.readAllLines(path);
+//            List<String> contentLine = new ArrayList<>();
             contentList.forEach((content) -> {
-
+                String[] contentLine = content.split(delimiter);
+                //값이 누락된 경우
+                if(contentLine.length != 6) {
+                    //초기화
+                    return;
+                }
+                //db에 저장
+                System.out.println(contentLine);
             });
         } catch (IOException e) {
-
         }
+    }
+    @Scheduled(fixedRate = 10000)
+    public void writeValueInFile() {
+        appendWriteToFile(path, NEWLINE+"2022-07-22 01|32|4|45100|27300|95000");
 
     }
 
     private String getExtensionByGuava(String fileName) {
         return com.google.common.io.Files.getFileExtension(fileName);
+    }
+    private void appendWriteToFile(Path path, String line) {
+        try {
+            Files.write(path, line.getBytes(StandardCharsets.UTF_8),
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.APPEND);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
