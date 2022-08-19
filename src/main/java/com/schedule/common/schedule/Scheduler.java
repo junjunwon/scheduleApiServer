@@ -1,4 +1,4 @@
-package com.schedule.scheduleApiServer.common.schedule;
+package com.schedule.common.schedule;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;

@@ -1,9 +1,8 @@
-package com.schedule.scheduleApiServer.common.schedule;
+package com.schedule.common.schedule;
 
-import com.schedule.scheduleApiServer.ScheduleApiServerApplication;
+import com.schedule.ScheduleApiServerApplication;
 import org.awaitility.Duration;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
