@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 //@EnableJpaAuditing
 @EnableScheduling
-@SpringBootApplication(exclude={DataSourceAutoConfiguration.class})
+@SpringBootApplication
 public class ScheduleApiServerApplication {
 
 	public static final String APPLICATION_LOCATIONS = "spring.config.location="
