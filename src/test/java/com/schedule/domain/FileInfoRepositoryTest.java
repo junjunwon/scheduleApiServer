@@ -2,14 +2,14 @@ package com.schedule.domain;
 
 
 import com.schedule.domain.file.FileInfo;
+import com.schedule.domain.file.FileInfoCustomRepositoryImpl;
 import com.schedule.domain.file.FileInfoRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
@@ -25,6 +25,9 @@ public class FileInfoRepositoryTest {
 
     @Autowired
     FileInfoRepository fileInfoRepository;
+
+    @Autowired
+    FileInfoCustomRepositoryImpl fileInfoCustomRepository;
 
     @AfterEach
     public void cleanup() {
@@ -58,5 +61,14 @@ public class FileInfoRepositoryTest {
         assertThat(fileInfo.getPayment(), is(equalTo(payment)));
         assertThat(fileInfo.getCost(), is(equalTo(cost)));
         assertThat(fileInfo.getRevenue(), is(equalTo(revenue)));
+    }
+
+    @DisplayName("전체 데이터 조회 테스트")
+    @Test
+    public void queryDSL_fetch_all_data() {
+//        EntityManager entityManager = EntityManagerFactory.class.
+        List<FileInfo> list = fileInfoCustomRepository.findFileList();
+
+        System.out.print("abc");
     }
 }
