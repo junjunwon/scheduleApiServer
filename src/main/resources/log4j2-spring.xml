@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %5p [%c] %m%n" />
+        </Console>
+        <RollingFile name="file" fileName="/Users/wonjunho/Desktop/junho/develop/codingTest/daouTech/logs/${pid}.log"
+                     filePattern="/Users/wonjunho/Desktop/junho/develop/codingTest/daouTech/logs/${pid}_%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="java.sql" level="OFF" additivity="false">  <!--OFF    DEBUG   ERROR   INFO  -->
+            <AppenderRef ref="console" />
+        </Logger>
+        <Logger name="com.schedule" level="DEBUG" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="file"/>
+        </Logger>
+        <Logger name="jdbc.sqltiming" level="OFF" additivity="false">
+            <AppenderRef ref="console" />
+        </Logger>
+        <Logger name="org.springframework" level="INFO" additivity="false">
+            <AppenderRef ref="console" />
+        </Logger>
+        <Root level="ERROR">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="file"/>
+        </Root>
+    </Loggers>
+</Configuration>
