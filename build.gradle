@@ -59,6 +59,9 @@ dependencies {
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.2'
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.2'
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.17.2'
+
+	//rate limit bucket4j Core > 7.6.0
+	implementation 'com.github.vladimir-bukhtoyarov:bucket4j-core:7.6.0'
 }
 
 //querydsl 추가 시작
