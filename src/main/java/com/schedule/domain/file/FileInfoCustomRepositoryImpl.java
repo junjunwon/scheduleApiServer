@@ -23,6 +23,15 @@ public class FileInfoCustomRepositoryImpl implements FileInfoCustomRepository {
                 .fetch();
     }
 
+    @Override
+    public List<FileInfo> findFileListByIds(List<Long> ids) {
+
+        return jpaQueryFactory
+                .selectFrom(fileInfo)
+                .where(fileInfo.id.in(ids))
+                .fetch();
+    }
+
     public int findEqualDateTime(LocalDateTime time) {
         int check =  jpaQueryFactory
                 .selectFrom(fileInfo)
@@ -31,5 +40,13 @@ public class FileInfoCustomRepositoryImpl implements FileInfoCustomRepository {
                 .fetch().size();
 
         return check;
+    }
+
+    @Override
+    public Long deleteByIds(List<Long> ids) {
+        return jpaQueryFactory
+                .delete(fileInfo)
+                .where(fileInfo.id.in(ids))
+                .execute();
     }
 }

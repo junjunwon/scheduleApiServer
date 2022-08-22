@@ -15,6 +15,15 @@ public interface FileInfoCustomRepository {
     List<FileInfo> findFileList();
 
     /**
+     * 여러 데이터 조회
+     *
+     * @author jh.won
+     * @since 2022.08.21
+     * @return
+     */
+    List<FileInfo> findFileListByIds(List<Long> ids);
+
+    /**
      * 시간대별 가입자 수 조회
      *
      * @author jh.won
@@ -40,11 +49,12 @@ public interface FileInfoCustomRepository {
     int findEqualDateTime(LocalDateTime time);
 
     /**
-     * 전체 데이터 조회
+     * 단일/다중 데이터 삭제
      *
      * @author jh.won
-     * @since 2022.08.21
+     * @since 2022.08.22
      * @return
      */
+    Long deleteByIds(List<Long> ids);
 
 }

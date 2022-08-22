@@ -1,9 +1,12 @@
 package com.schedule.domain;
 
 
+import com.schedule.common.schedule.Scheduler;
 import com.schedule.domain.file.FileInfo;
 import com.schedule.domain.file.FileInfoCustomRepositoryImpl;
 import com.schedule.domain.file.FileInfoRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +34,7 @@ public class FileInfoRepositoryTest {
 
     @AfterEach
     public void cleanup() {
-        fileInfoRepository.deleteAll();
+//        fileInfoRepository.deleteAll();
     }
 
     @Test
