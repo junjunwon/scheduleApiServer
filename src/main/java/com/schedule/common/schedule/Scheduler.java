@@ -29,7 +29,7 @@ import java.util.Random;
 @Component
 public class Scheduler {
 
-    private static final Logger log = LogManager.getLogger(Scheduler.class);
+    private static final Logger logger = LogManager.getLogger(Scheduler.class);
     static {
         String pid = ManagementFactory.getRuntimeMXBean().getName().replaceAll("@.*", "");
         //MDC
@@ -62,7 +62,7 @@ public class Scheduler {
         stringBuffer.append("]");
         delimiter = stringBuffer.toString();
 
-        log.debug("Hello from Log4j 2 - num : {}", path);
+        logger.debug("Hello from Log4j 2 - num : {}", path);
     }
 
     /**
@@ -71,8 +71,8 @@ public class Scheduler {
      * @author jh.won
      * @since 2022.08.21
      */
-//    @Scheduled(cron = "0 0 0/1 * * *") //1시간마다 도는 스케줄러
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(cron = "0 0 0/1 * * *") //1시간마다 도는 스케줄러
+//    @Scheduled(fixedRate = 5000)
     public void writeValueInFile() {
         StringBuffer stringBuffer = new StringBuffer();
         String hourOfToday = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -97,11 +97,12 @@ public class Scheduler {
     }
 
     //    @Scheduled(cron = "0 0 00 * * *", zone = "Asia/Seoul")
-    @Scheduled(fixedRate = 10000)
+        @Scheduled(cron = "0 0 08 * * *", zone = "Asia/Seoul")
+//    @Scheduled(fixedRate = 10000)
     public void getFileListScheduler() {
 
         try {
-            log.debug("Hello from Log4j 2 - num : {}",path);
+            logger.debug("Hello from Log4j 2 - num : {}",path);
             List<String> contentList = Files.readAllLines(path);
             //체크
             isCorrect = checkContentFiles(contentList);
