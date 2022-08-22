@@ -2,6 +2,7 @@ package com.schedule.service;
 
 import com.schedule.dto.file.FileInfoResponseDto;
 import com.schedule.dto.file.FileInfoSaveRequestDto;
+import com.schedule.dto.file.FileInfoUpdateRequestDto;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -30,6 +31,26 @@ public interface FileService {
     @Transactional
     Long save(FileInfoSaveRequestDto fileInfoSaveRequestDto);
 
+    /**
+     * content 단일/다중 삭제
+     *
+     * @author jh.won
+     * @since 2022.08.22
+     * @param ids
+     * @return
+     */
     @Transactional
-    Long deleteContentsById(List<Long> ids);
+    Long deleteContentsByIds(List<Long> ids);
+
+    /**
+     * content 수정
+     *
+     * @author jh.won
+     * @since 2022.08.22
+     * @param id
+     * @param fileInfoUpdateRequestDto
+     * @return
+     */
+    @Transactional
+    Long updateContentById(Long id, FileInfoUpdateRequestDto fileInfoUpdateRequestDto);
 }

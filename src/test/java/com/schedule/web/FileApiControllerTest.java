@@ -1,8 +1,11 @@
 package com.schedule.web;
 
+import com.schedule.common.object.Response;
 import com.schedule.domain.file.FileInfo;
+import com.schedule.domain.file.FileInfoCustomRepository;
 import com.schedule.domain.file.FileInfoRepository;
 import com.schedule.dto.file.FileInfoSaveRequestDto;
+import com.schedule.dto.file.FileInfoUpdateRequestDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
@@ -41,6 +44,9 @@ public class FileApiControllerTest {
     @Autowired
     private FileInfoRepository fileInfoRepository;
 
+    @Autowired
+    private FileInfoCustomRepository fileInfoCustomRepository;
+
     @AfterEach
     public void cleanup() {
         fileInfoRepository.deleteAll();
@@ -75,6 +81,56 @@ public class FileApiControllerTest {
 
         assertThat(all.get(0).getRevenue(), is(equalTo(revenue)));
         assertThat(all.get(0).getPayment(), is(equalTo(payment)));
+    }
+
+    @Test
+    public void Content_수정된다() throws Exception {
+
+        FileInfo savedFileInfo = fileInfoRepository.save(FileInfo.builder()
+                .time(LocalDateTime.now())
+                .joinMemberCnt(32)
+                .leaveMemberCnt(40)
+                .payment(50_000)
+                .cost(40_000)
+                .revenue(30_000)
+                .build());
+
+        Long updateId = savedFileInfo.getId();
+
+        int joinMemberCnt = 99; //가입자수
+        int leaveMemberCnt = 99; //탈퇴자수
+        int payment = 99_999; //결제금액
+        int cost = 88_888; //사용금액
+        int revenue = 77_777; //매출
+
+        FileInfoUpdateRequestDto updateRequestDto =
+                FileInfoUpdateRequestDto.builder()
+                        .joinMemberCnt(joinMemberCnt)
+                        .leaveMemberCnt(leaveMemberCnt)
+                        .payment(payment)
+                        .cost(cost)
+                        .revenue(revenue)
+                        .build();
+
+        String url = "http://localhost:"+port+"/api/file/update/"+updateId;
+
+        HttpEntity<FileInfoUpdateRequestDto> requestDtoHttpEntity =
+                new HttpEntity<>(updateRequestDto);
+
+        ResponseEntity<?> responseEntity = restTemplate
+                .exchange(url, HttpMethod.PUT,
+                        requestDtoHttpEntity, Object.class);
+
+        assertThat(responseEntity.getStatusCode(), is(equalTo(HttpStatus.OK)));
+//        assertThat(responseEntity.getBody(), greaterThan(0L));
+
+        FileInfo fileInfo =  fileInfoCustomRepository.findFileInfoById(updateId);
+
+        assertThat(fileInfo.getPayment(), is(equalTo(payment)));
+        assertThat(fileInfo.getCost(), is(equalTo(cost)));
+        assertThat(fileInfo.getRevenue(), is(equalTo(revenue)));
+        assertThat(fileInfo.getLeaveMemberCnt(), is(equalTo(leaveMemberCnt)));
+        assertThat(fileInfo.getJoinMemberCnt(), is(equalTo(joinMemberCnt)));
     }
 
     @Test

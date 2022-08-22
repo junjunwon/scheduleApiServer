@@ -15,6 +15,15 @@ public interface FileInfoCustomRepository {
     List<FileInfo> findFileList();
 
     /**
+     * 데이터 조회
+     *
+     * @author jh.won
+     * @since 2022.08.21
+     * @return
+     */
+    FileInfo findFileInfoById(Long id);
+
+    /**
      * 여러 데이터 조회
      *
      * @author jh.won

@@ -43,4 +43,18 @@ public class FileInfo {
         this.cost = cost;
         this.revenue = revenue;
     }
+
+    public void update(
+            int joinMemberCnt,
+            int leaveMemberCnt,
+            int payment,
+            int cost,
+            int revenue
+    ) {
+        this.joinMemberCnt = joinMemberCnt;
+        this.leaveMemberCnt = leaveMemberCnt;
+        this.payment = payment;
+        this.cost = cost;
+        this.revenue = revenue;
+    }
 }

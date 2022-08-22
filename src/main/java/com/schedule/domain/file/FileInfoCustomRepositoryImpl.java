@@ -24,6 +24,14 @@ public class FileInfoCustomRepositoryImpl implements FileInfoCustomRepository {
     }
 
     @Override
+    public FileInfo findFileInfoById(Long id) {
+        return jpaQueryFactory
+                .selectFrom(fileInfo)
+                .where(fileInfo.id.eq(id))
+                .fetchOne();
+    }
+
+    @Override
     public List<FileInfo> findFileListByIds(List<Long> ids) {
 
         return jpaQueryFactory

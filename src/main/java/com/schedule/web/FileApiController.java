@@ -4,6 +4,7 @@ import com.schedule.common.object.Response;
 import com.schedule.common.schedule.Scheduler;
 import com.schedule.dto.file.FileInfoResponseDto;
 import com.schedule.dto.file.FileInfoSaveRequestDto;
+import com.schedule.dto.file.FileInfoUpdateRequestDto;
 import com.schedule.service.FileService;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
@@ -76,6 +77,8 @@ public class FileApiController {
             if(index>0) {
                 response.setMessage("Success");
                 response.setStatus(HttpStatus.OK);
+            } else {
+                response.setMessage("Fail to save");
             }
             response.setAvailableTokens(bucket.getAvailableTokens()); // 임계치까지 남은 api호출 횟수
 
@@ -88,6 +91,32 @@ public class FileApiController {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
     }
 
+    @PutMapping("/file/update/{id}")
+    public ResponseEntity<Response> updateContentById(@PathVariable Long id,
+                                                      @RequestBody FileInfoUpdateRequestDto fileInfoUpdateRequestDto) {
+
+        HttpHeaders headers= new HttpHeaders();
+        headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+
+        if(bucket.tryConsume(1)) {
+            Response response = new Response();
+            Long index = fileService.updateContentById(id, fileInfoUpdateRequestDto);
+            if(index > 0L) {
+                response.setMessage("Success");
+                response.setStatus(HttpStatus.OK);
+            } else {
+                response.setMessage("Fail to update");
+            }
+            response.setAvailableTokens(bucket.getAvailableTokens()); // 임계치까지 남은 api호출 횟수
+
+            logger.info("success");
+            return new ResponseEntity<>(response, headers, HttpStatus.OK);
+        }
+        logger.info("too many requests");
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
+    }
+
+
     @DeleteMapping("/file/delete/{ids}")
     public ResponseEntity<Response> deleteContentsById(@PathVariable List<Long> ids) {
         HttpHeaders headers= new HttpHeaders();
@@ -95,7 +124,7 @@ public class FileApiController {
 
         if(bucket.tryConsume(1)) {
             Response response = new Response();
-            long check = fileService.deleteContentsById(ids);
+            long check = fileService.deleteContentsByIds(ids);
             if(check>0) {
                 response.setMessage("Success");
             } else {
