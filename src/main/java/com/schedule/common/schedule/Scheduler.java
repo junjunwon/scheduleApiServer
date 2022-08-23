@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -38,6 +39,7 @@ public class Scheduler {
     private final FileService fileService;
     private final FileInfoCustomRepository fileInfoCustomRepository;
     private static final Path path = Paths.get("src/main/resources/files/inputList.txt");
+    private static final ClassPathResource resource = new ClassPathResource("files/inputList.txt");
     private static final String NEWLINE = System.lineSeparator();
     private String fileExtension = "";
     private String delimiter = "";
@@ -47,15 +49,17 @@ public class Scheduler {
     private void setInitData() {
 
         StringBuffer stringBuffer = new StringBuffer();
-
+        String FileNameInClass = resource.getFilename();
         map = new HashMap<>() {{
             put("txt", "|");
             put("csv", ",");
             put("xlsx", ",");
             put("hwp", "-");
         }};
+        // TODO : 클래스 경로에 inputList.txt파일이 정상적으로 쓰기/읽기 되는지 확인.
         //확장자 추출
-        fileExtension = getExtensionByGuava(path.getFileName().toString());
+//        fileExtension = getExtensionByGuava(path.getFileName().toString());
+        fileExtension = getExtensionByGuava(FileNameInClass);
         //구분자 추출
         stringBuffer.append("["); //특수문자 구분자를 위한 대괄호
         stringBuffer.append(map.get(fileExtension));
@@ -63,6 +67,7 @@ public class Scheduler {
         delimiter = stringBuffer.toString();
 
         logger.debug("Hello from Log4j 2 - num : {}", path);
+        logger.debug("Hello from Log4j 2 - num : {}", FileNameInClass);
     }
 
     /**
@@ -75,7 +80,10 @@ public class Scheduler {
 //    @Scheduled(fixedRate = 5000)
     public void writeValueInFile() {
         StringBuffer stringBuffer = new StringBuffer();
-        String hourOfToday = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        // TODO 테스트할때는 :mm:ss 추가하기
+//        String hourOfToday = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String hourOfToday = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH"));
         int joinMemberCnt = getRandomNumberUsingNextInt(1, 99);
         int leaveMemberCnt = getRandomNumberUsingNextInt(1, 99);
         int payment = getRandomNumberUsingNextInt(1000, 100000);
