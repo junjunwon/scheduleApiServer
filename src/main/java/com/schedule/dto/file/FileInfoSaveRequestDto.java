@@ -6,17 +6,34 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
 public class FileInfoSaveRequestDto {
+    @NotNull(message = "TIME_IS_MANDATORY")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH")
     private LocalDateTime time; //시간
+    @NotNull(message = "VALUE_IS_MANDATORY")
+    @PositiveOrZero
     private int joinMemberCnt; //가입자수
+    @NotNull(message = "VALUE_IS_MANDATORY")
+    @PositiveOrZero
     private int leaveMemberCnt; //탈퇴자수
+    @NotNull(message = "VALUE_IS_MANDATORY")
+    @PositiveOrZero
     private int payment; //결제금액
+    @NotNull(message = "VALUE_IS_MANDATORY")
+    @PositiveOrZero
     private int cost; //사용금액
+    @NotNull(message = "VALUE_IS_MANDATORY")
+    @PositiveOrZero
     private int revenue; //매출
 
     @Builder

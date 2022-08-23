@@ -1,5 +1,6 @@
 package com.schedule.web;
 
+import com.schedule.common.object.ErrorResponse;
 import com.schedule.common.object.Response;
 import com.schedule.common.schedule.Scheduler;
 import com.schedule.dto.file.FileInfoResponseDto;
@@ -10,19 +11,27 @@ import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Refill;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.h2.api.ErrorCode;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolationException;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Slf4j
 @RequestMapping("/api")
 @RestController
 public class FileApiController {
@@ -65,12 +74,20 @@ public class FileApiController {
     }
 
     @PostMapping("/file/save")
-    public ResponseEntity<Response> save(@RequestBody FileInfoSaveRequestDto fileInfoSaveRequestDto) {
+    public ResponseEntity<?> save(@Validated @RequestBody final FileInfoSaveRequestDto fileInfoSaveRequestDto, BindingResult bindingResult) {
 
         HttpHeaders headers= new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
 
         if(bucket.tryConsume(1)) {
+
+            //유효성 검사
+            if(bindingResult.hasErrors()) {
+                List<String> errors = bindingResult.getAllErrors().stream().map(e -> e.getDefaultMessage()).collect(Collectors.toList());
+                return ResponseEntity.ok(new ErrorResponse("404", "Validation failure", errors));
+                // or 404 request
+            }
+
             Response response = new Response();
 
             long index = fileService.save(fileInfoSaveRequestDto);
@@ -92,13 +109,21 @@ public class FileApiController {
     }
 
     @PutMapping("/file/update/{id}")
-    public ResponseEntity<Response> updateContentById(@PathVariable Long id,
-                                                      @RequestBody FileInfoUpdateRequestDto fileInfoUpdateRequestDto) {
+    public ResponseEntity<?> updateContentById(@PathVariable Long id,
+                                                      @Validated @RequestBody final FileInfoUpdateRequestDto fileInfoUpdateRequestDto,
+                                                      BindingResult bindingResult) {
 
         HttpHeaders headers= new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
 
         if(bucket.tryConsume(1)) {
+            //유효성 검사
+            if(bindingResult.hasErrors()) {
+                List<String> errors = bindingResult.getAllErrors().stream().map(e -> e.getDefaultMessage()).collect(Collectors.toList());
+                // TODO : ExceptionHandler로 처리하기.
+                return ResponseEntity.ok(new ErrorResponse("404", "Validation failure", errors));
+            }
+
             Response response = new Response();
             Long index = fileService.updateContentById(id, fileInfoUpdateRequestDto);
             if(index > 0L) {
