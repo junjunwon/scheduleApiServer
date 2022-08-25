@@ -28,6 +28,7 @@ public class WebSecurityConfig {
                 .antMatchers("/api/**").hasRole("USER")
                 .anyRequest().authenticated()
                 .and().formLogin().permitAll()
+                .and().httpBasic()
                 .and().csrf().disable();
 
         return http.build();

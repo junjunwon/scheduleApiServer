@@ -112,6 +112,8 @@ public class Scheduler {
 //    @Scheduled(cron = "0 0 0/1 * * *") //1시간마다 도는 스케줄러
     @Scheduled(fixedRate = 10000)
     public void writeValueInFile() throws IOException {
+        logger.info("Start writeValueInFile... - path : {}",path);
+
         StringBuffer stringBuffer = new StringBuffer();
 
         // TODO 테스트할때는 :mm:ss 추가하기
@@ -133,6 +135,8 @@ public class Scheduler {
                 .append(NEWLINE)
                 .toString();
 
+        logger.info("Check value for writing... - a content : {}",contentLine);
+
 //        appendWriteToFile(path, "2022-07-22 01|32|4|45100|27300|95000"+NEWLINE);
 //        appendWriteToFile(Path.of(resource.getURI()), contentLine);
         appendWriteToFile(path, contentLine);
@@ -144,7 +148,7 @@ public class Scheduler {
     public void getFileListScheduler() {
 
         try {
-            logger.debug("Hello from Log4j 2 - num : {}",path);
+            logger.info("Start getFileListScheduler... - path : {}",path);
             List<String> contentList = Files.readAllLines(path);
             //체크
             isCorrect = checkContentFiles(contentList);

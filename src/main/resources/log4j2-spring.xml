@@ -45,8 +45,8 @@
             <AppenderRef ref="FileInfoFile"/>
         </Logger>
         <Logger name="com.schedule" level="INFO" additivity="false">
-            <AppenderRef ref="BasicConsole" />
-            <AppenderRef ref="ProcessFile"/>
+            <AppenderRef ref="PerformanceConsole" />
+            <AppenderRef ref="FileInfoFile"/>
         </Logger>
         <Logger name="org.springframework" level="INFO" additivity="false">
             <AppenderRef ref="BasicConsole" />

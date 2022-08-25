@@ -1,0 +1,40 @@
+[2022-08-26 08:38:06]-[INFO]-Start writeValueInFile... - path : src/main/resources/files/inputList.txt
+[2022-08-26 08:38:06]-[INFO]-Check value for writing... - a content : 2022-08-26 08:38|96|91|63227|28297|12746
+
+[2022-08-26 08:38:06]-[INFO]-[writeValueInFile]-[Request Time : 2022-08-26 08:38:06]
+[2022-08-26 08:38:06]-[INFO]-[writeValueInFile]-[Response Time : 2022-08-26 08:38:06]
+[2022-08-26 08:38:06]-[INFO]-[writeValueInFile]-[Duration of Time : 3703000ns]
+[2022-08-26 08:38:06]-[INFO]-Start getFileListScheduler... - path : src/main/resources/files/inputList.txt
+[2022-08-26 08:38:18]-[INFO]-[getFileListScheduler]-[Request Time : 2022-08-26 08:38:06]
+[2022-08-26 08:38:18]-[INFO]-[getFileListScheduler]-[Response Time : 2022-08-26 08:38:18]
+[2022-08-26 08:38:18]-[INFO]-[getFileListScheduler]-[Duration of Time : 442946000ns]
+[2022-08-26 08:38:18]-[INFO]-Start writeValueInFile... - path : src/main/resources/files/inputList.txt
+[2022-08-26 08:38:18]-[INFO]-Check value for writing... - a content : 2022-08-26 08:38|8|98|86124|43241|69002
+
+[2022-08-26 08:38:18]-[INFO]-[writeValueInFile]-[Request Time : 2022-08-26 08:38:18]
+[2022-08-26 08:38:18]-[INFO]-[writeValueInFile]-[Response Time : 2022-08-26 08:38:18]
+[2022-08-26 08:38:18]-[INFO]-[writeValueInFile]-[Duration of Time : 497000ns]
+[2022-08-26 08:38:26]-[INFO]-Start writeValueInFile... - path : src/main/resources/files/inputList.txt
+[2022-08-26 08:38:26]-[INFO]-Check value for writing... - a content : 2022-08-26 08:38|50|21|8159|90995|10807
+
+[2022-08-26 08:38:26]-[INFO]-[writeValueInFile]-[Request Time : 2022-08-26 08:38:26]
+[2022-08-26 08:38:26]-[INFO]-[writeValueInFile]-[Response Time : 2022-08-26 08:38:26]
+[2022-08-26 08:38:26]-[INFO]-[writeValueInFile]-[Duration of Time : 1861000ns]
+[2022-08-26 08:38:36]-[INFO]-Start writeValueInFile... - path : src/main/resources/files/inputList.txt
+[2022-08-26 08:38:36]-[INFO]-Check value for writing... - a content : 2022-08-26 08:38|39|24|31272|6696|19188
+
+[2022-08-26 08:38:36]-[INFO]-[writeValueInFile]-[Request Time : 2022-08-26 08:38:36]
+[2022-08-26 08:38:36]-[INFO]-[writeValueInFile]-[Response Time : 2022-08-26 08:38:36]
+[2022-08-26 08:38:36]-[INFO]-[writeValueInFile]-[Duration of Time : 533000ns]
+[2022-08-26 08:38:46]-[INFO]-Start writeValueInFile... - path : src/main/resources/files/inputList.txt
+[2022-08-26 08:38:46]-[INFO]-Check value for writing... - a content : 2022-08-26 08:38|39|20|18097|18606|66891
+
+[2022-08-26 08:38:46]-[INFO]-[writeValueInFile]-[Request Time : 2022-08-26 08:38:46]
+[2022-08-26 08:38:46]-[INFO]-[writeValueInFile]-[Response Time : 2022-08-26 08:38:46]
+[2022-08-26 08:38:46]-[INFO]-[writeValueInFile]-[Duration of Time : 582000ns]
+[2022-08-26 08:38:56]-[INFO]-Start writeValueInFile... - path : src/main/resources/files/inputList.txt
+[2022-08-26 08:38:56]-[INFO]-Check value for writing... - a content : 2022-08-26 08:38|58|42|71522|73853|83408
+
+[2022-08-26 08:38:56]-[INFO]-[writeValueInFile]-[Request Time : 2022-08-26 08:38:56]
+[2022-08-26 08:38:56]-[INFO]-[writeValueInFile]-[Response Time : 2022-08-26 08:38:56]
+[2022-08-26 08:38:56]-[INFO]-[writeValueInFile]-[Duration of Time : 465000ns]

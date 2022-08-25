@@ -29,12 +29,15 @@ public class LogAspect {
     @Pointcut("within(com.schedule.web..*)")
     private void publicTarget() {}
 
-    @Around("publicTarget()")
+    @Pointcut("within(com.schedule.schedule.Scheduler)")
+    private void SchedulerTarget() {}
+
+    @Around("publicTarget() || SchedulerTarget()")
     public Object PerformanceAdvice(ProceedingJoinPoint joinPoint) throws  Throwable {
         Logger logger = LogManager.getLogger(joinPoint.getSignature().getDeclaringTypeName());
 
-        HttpServletRequest request =
-                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+//        HttpServletRequest request =
+//                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime startDate = LocalDateTime.now();
@@ -49,4 +52,9 @@ public class LogAspect {
             logger.info("[{}]-[{}]", joinPoint.getSignature().getName(), "Duration of Time : "+ Duration.between(startDate, endDate).getNano()+"ns");
         }
     }
+
+//    @Around("SchedulerTarget()")
+//    public Object PerformanceScheduler(){
+//
+//    }
 }
