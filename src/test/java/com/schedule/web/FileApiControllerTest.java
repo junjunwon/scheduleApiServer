@@ -1,6 +1,5 @@
 package com.schedule.web;
 
-import com.schedule.common.object.Response;
 import com.schedule.domain.file.FileInfo;
 import com.schedule.domain.file.FileInfoCustomRepository;
 import com.schedule.domain.file.FileInfoRepository;
