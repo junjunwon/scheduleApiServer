@@ -1,4 +1,4 @@
-package com.schedule.service;
+package com.schedule.service.file;
 
 import com.schedule.dto.file.FileInfoResponseDto;
 import com.schedule.dto.file.FileInfoSaveRequestDto;
@@ -17,7 +17,6 @@ public interface FileService {
      * @since 2022.08.22
      * @return
      */
-    @Transactional(readOnly = true)
     List<FileInfoResponseDto> findFileList();
 
     /**
@@ -28,7 +27,6 @@ public interface FileService {
      * @param fileInfoSaveRequestDto
      * @return
      */
-    @Transactional
     Long save(FileInfoSaveRequestDto fileInfoSaveRequestDto);
 
     /**
@@ -39,7 +37,6 @@ public interface FileService {
      * @param ids
      * @return
      */
-    @Transactional
     Long deleteContentsByIds(List<Long> ids);
 
     /**
@@ -51,6 +48,5 @@ public interface FileService {
      * @param fileInfoUpdateRequestDto
      * @return
      */
-    @Transactional
     Long updateContentById(Long id, FileInfoUpdateRequestDto fileInfoUpdateRequestDto);
 }

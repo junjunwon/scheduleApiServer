@@ -1,31 +1,25 @@
-package com.schedule.web;
+package com.schedule.web.file;
 
-import com.schedule.common.object.ErrorResponse;
-import com.schedule.common.object.Response;
-import com.schedule.common.schedule.Scheduler;
+import com.schedule.common.response.ErrorResponse;
+import com.schedule.common.response.Response;
 import com.schedule.dto.file.FileInfoResponseDto;
 import com.schedule.dto.file.FileInfoSaveRequestDto;
 import com.schedule.dto.file.FileInfoUpdateRequestDto;
-import com.schedule.service.FileService;
+import com.schedule.service.file.FileService;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Refill;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.h2.api.ErrorCode;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.ConstraintViolationException;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.List;

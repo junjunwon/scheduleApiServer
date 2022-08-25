@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class FileInfoSaveRequestDto {
     @NotNull(message = "TIME_IS_MANDATORY")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH")
     private LocalDateTime time; //시간
     @NotNull(message = "VALUE_IS_MANDATORY")
     @PositiveOrZero

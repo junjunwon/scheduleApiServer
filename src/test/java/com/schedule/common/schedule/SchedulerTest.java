@@ -1,6 +1,7 @@
 package com.schedule.common.schedule;
 
 import com.schedule.ScheduleApiServerApplication;
+import com.schedule.schedule.Scheduler;
 import org.awaitility.Duration;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.SpyBean;

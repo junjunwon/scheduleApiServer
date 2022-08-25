@@ -1,19 +1,18 @@
-package com.schedule.common.schedule;
+package com.schedule.schedule;
 
 import com.schedule.domain.file.FileInfoCustomRepository;
 import com.schedule.dto.file.FileInfoSaveRequestDto;
-import com.schedule.service.FileService;
+import com.schedule.service.file.FileService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.ThreadContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,34 +20,41 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Component
 public class Scheduler {
 
     private static final Logger logger = LogManager.getLogger(Scheduler.class);
-    static {
-        String pid = ManagementFactory.getRuntimeMXBean().getName().replaceAll("@.*", "");
-        //MDC
-        ThreadContext.put("pid", pid);
-    }
     private final FileService fileService;
     private final FileInfoCustomRepository fileInfoCustomRepository;
-    private static final Path path = Paths.get("src/main/resources/files/inputList.txt");
-    private static final ClassPathResource resource = new ClassPathResource("files/inputList.txt");
+    private static Path path;
+    private static final ClassPathResource resource = new ClassPathResource("temp/inputList.txt");
     private static final String NEWLINE = System.lineSeparator();
     private String fileExtension = "";
     private String delimiter = "";
     private static boolean isCorrect;
     private static Map<String, String> map = new HashMap<>();
+
     @PostConstruct
-    private void setInitData() {
+    private void setInitData() throws IOException {
 
         StringBuffer stringBuffer = new StringBuffer();
+
+        //classloader url list get
+//        ClassLoader classLoader = Scheduler.class.getClassLoader();
+//        URL[] urls = ((URLClassLoader)classLoader).getURLs();
+
+        //resource file 경로에 저장
+        Path DirPath = Paths.get("src/main/resources/files/");
+        if(ObjectUtils.isEmpty(getListFiles(DirPath).get(0))) {
+            throw new IOException("FILE_NONE_EXIST_EXCEPTION");
+        }
+        path = getListFiles(DirPath).get(0);
+
         String FileNameInClass = resource.getFilename();
         map = new HashMap<>() {{
             put("txt", "|");
@@ -59,7 +65,7 @@ public class Scheduler {
         // TODO : 클래스 경로에 inputList.txt파일이 정상적으로 쓰기/읽기 되는지 확인.
         //확장자 추출
 //        fileExtension = getExtensionByGuava(path.getFileName().toString());
-        fileExtension = getExtensionByGuava(FileNameInClass);
+        fileExtension = getExtensionByGuava(path.getFileName().toString());
         //구분자 추출
         stringBuffer.append("["); //특수문자 구분자를 위한 대괄호
         stringBuffer.append(map.get(fileExtension));
@@ -70,6 +76,17 @@ public class Scheduler {
         logger.debug("Hello from Log4j 2 - num : {}", FileNameInClass);
     }
 
+    private List<Path> getListFiles(Path path) throws IOException {
+
+        List<Path> result;
+        try(Stream<Path> walk = Files.walk(path)) {
+            result = walk.filter(Files::isRegularFile)
+                    .collect(Collectors.toList());
+        }
+
+        return result;
+    }
+
     /**
      * write content in 파일 스케줄러
      *
@@ -77,13 +94,13 @@ public class Scheduler {
      * @since 2022.08.21
      */
     @Scheduled(cron = "0 0 0/1 * * *") //1시간마다 도는 스케줄러
-//    @Scheduled(fixedRate = 5000)
-    public void writeValueInFile() {
+//    @Scheduled(fixedRate = 30000)
+    public void writeValueInFile() throws IOException {
         StringBuffer stringBuffer = new StringBuffer();
 
         // TODO 테스트할때는 :mm:ss 추가하기
 //        String hourOfToday = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String hourOfToday = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH"));
+        String hourOfToday = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         int joinMemberCnt = getRandomNumberUsingNextInt(1, 99);
         int leaveMemberCnt = getRandomNumberUsingNextInt(1, 99);
         int payment = getRandomNumberUsingNextInt(1000, 100000);
@@ -101,12 +118,13 @@ public class Scheduler {
                 .toString();
 
 //        appendWriteToFile(path, "2022-07-22 01|32|4|45100|27300|95000"+NEWLINE);
+//        appendWriteToFile(Path.of(resource.getURI()), contentLine);
         appendWriteToFile(path, contentLine);
     }
 
     //    @Scheduled(cron = "0 0 00 * * *", zone = "Asia/Seoul")
-        @Scheduled(cron = "0 0 08 * * *", zone = "Asia/Seoul")
-//    @Scheduled(fixedRate = 10000)
+        @Scheduled(cron = "0 0 22 * * *", zone = "Asia/Seoul")
+//    @Scheduled(fixedRate = 300000)
     public void getFileListScheduler() {
 
         try {
@@ -125,7 +143,7 @@ public class Scheduler {
 
     private void saveContentFiles(List<String> contentList) {
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime time;
         LocalDateTime today = LocalDateTime.now();
         int isExist;
