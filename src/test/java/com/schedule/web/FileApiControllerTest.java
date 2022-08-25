@@ -1,5 +1,6 @@
 package com.schedule.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.schedule.domain.file.FileInfo;
 import com.schedule.domain.file.FileInfoCustomRepository;
 import com.schedule.domain.file.FileInfoRepository;
@@ -7,26 +8,28 @@ import com.schedule.dto.file.FileInfoSaveRequestDto;
 import com.schedule.dto.file.FileInfoUpdateRequestDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -46,13 +49,29 @@ public class FileApiControllerTest {
     @Autowired
     private FileInfoCustomRepository fileInfoCustomRepository;
 
+    @Autowired
+    private WebApplicationContext context;
+
+    private MockMvc mvc;
+
+
     @AfterEach
     public void cleanup() {
         fileInfoRepository.deleteAll();
     }
 
+    @BeforeAll
+    public void setup() {
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+    }
+
     @Test
+    @WithMockUser(roles="USER")
     public void File_등록된다() throws Exception {
+
         LocalDateTime time = LocalDateTime.now(); //시간
         int joinMemberCnt = 32; //가입자수
         int leaveMemberCnt = 40; //탈퇴자수
@@ -70,8 +89,15 @@ public class FileApiControllerTest {
 
         String url = "http://localhost:"+port+"/api/file/save";
 
+        mvc.perform(post(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(requestDto)))
+                .andExpect(status().isOk());
+
         ResponseEntity<Long> responseEntity = restTemplate
                 .postForEntity(url, requestDto, Long.class);
+
+
 
         assertThat(responseEntity.getStatusCode(), is(equalTo(HttpStatus.OK)));
         assertThat(responseEntity.getBody(), greaterThan(0L));
@@ -112,6 +138,11 @@ public class FileApiControllerTest {
                         .build();
 
         String url = "http://localhost:"+port+"/api/file/update/"+updateId;
+
+        mvc.perform(post(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(updateRequestDto)))
+                .andExpect(status().isOk());
 
         HttpEntity<FileInfoUpdateRequestDto> requestDtoHttpEntity =
                 new HttpEntity<>(updateRequestDto);
