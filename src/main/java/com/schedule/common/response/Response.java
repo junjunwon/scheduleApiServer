@@ -1,13 +1,9 @@
-package com.schedule.common.object;
+package com.schedule.common.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 @Getter
 @Setter

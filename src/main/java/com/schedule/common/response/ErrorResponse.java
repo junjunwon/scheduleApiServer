@@ -1,4 +1,4 @@
-package com.schedule.common.object;
+package com.schedule.common.response;
 
 import lombok.Getter;
 import lombok.Setter;
