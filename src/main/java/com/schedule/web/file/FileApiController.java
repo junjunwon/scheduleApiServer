@@ -52,6 +52,7 @@ public class FileApiController {
         HttpHeaders headers= new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
 
+
         if(bucket.tryConsume(1)) {
             Response response = new Response();
             List<FileInfoResponseDto> dtoList = fileService.findFileList();

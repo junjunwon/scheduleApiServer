@@ -1,34 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
+    <!--변수 설정-->
+    <Properties>
+        <Property name="BASE_DIR">./logs</Property> <!--로그 파일 경로-->
+        <Property name="PERFORMANCE_FORMAT">[%date{yyyy-MM-dd HH:mm:ss}]-[%level]-%msg%n</Property><!--로그 출력 형태-->
+        <Property name="BASIC_FORMAT">[%date{yyyy-MM-dd HH:mm:ss}]-[%level]-[%M]-%msg%n</Property><!--로그 출력 형태-->
+    </Properties>
     <Appenders>
-        <Console name="console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d %5p [%c] %m%n" />
+        <!--콘솔 로그-->
+        <Console name="PerformanceConsole" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${PERFORMANCE_FORMAT}"/>
         </Console>
-        <RollingFile name="file" fileName="/Users/wonjunho/Desktop/junho/develop/codingTest/daouTech/logs/${pid}.log"
-                     filePattern="/Users/wonjunho/Desktop/junho/develop/codingTest/daouTech/logs/${pid}_%d{yyyy-MM-dd}.log">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        <Console name="BasicConsole" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${BASIC_FORMAT}"/>
+        </Console>
+        <!--로그 파일-->
+        <RollingFile name="FileInfoFile" fileName="${BASE_DIR}/fileInfo.log" filePattern="${BASE_DIR}/fileInfo_%d{yyyy-MM-dd hh:mm}.log">
+            <PatternLayout pattern="${PERFORMANCE_FORMAT}"/>
             <Policies>
-                <TimeBasedTriggeringPolicy />
+<!--                 매일(yyyy-MM-dd) log zip파일 생성-->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="UserInfoFile" fileName="${BASE_DIR}/userInfo.log" filePattern="${BASE_DIR}/userInfo_%d{yyyy-MM-dd hh:mm}.log">
+            <PatternLayout pattern="${PERFORMANCE_FORMAT}"/>
+            <Policies>
+                    <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="ProcessFile" fileName="${BASE_DIR}/log.log" filePattern="${BASE_DIR}/log_%d{yyyy-MM-dd hh:mm}.log">
+            <PatternLayout pattern="${BASIC_FORMAT}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
             </Policies>
         </RollingFile>
     </Appenders>
     <Loggers>
-        <Logger name="java.sql" level="OFF" additivity="false">  <!--OFF    DEBUG   ERROR   INFO  -->
-            <AppenderRef ref="console" />
+        <Logger name="com.schedule.web.file.UserInfoController" level="INFO" additivity="false">
+            <AppenderRef ref="PerformanceConsole" />
+            <AppenderRef ref="UserInfoFile"/>
         </Logger>
-        <Logger name="com.schedule" level="DEBUG" additivity="false">
-            <AppenderRef ref="console" />
-            <AppenderRef ref="file"/>
+        <Logger name="com.schedule.web.file.FileApiController" level="INFO" additivity="false">
+            <AppenderRef ref="PerformanceConsole" />
+            <AppenderRef ref="FileInfoFile"/>
         </Logger>
-        <Logger name="jdbc.sqltiming" level="OFF" additivity="false">
-            <AppenderRef ref="console" />
+        <Logger name="com.schedule" level="INFO" additivity="false">
+            <AppenderRef ref="BasicConsole" />
+            <AppenderRef ref="ProcessFile"/>
         </Logger>
         <Logger name="org.springframework" level="INFO" additivity="false">
-            <AppenderRef ref="console" />
+            <AppenderRef ref="BasicConsole" />
         </Logger>
         <Root level="ERROR">
-            <AppenderRef ref="console" />
-            <AppenderRef ref="file"/>
+            <AppenderRef ref="BasicConsole" />
+            <AppenderRef ref="ProcessFile"/>
         </Root>
     </Loggers>
 </Configuration>

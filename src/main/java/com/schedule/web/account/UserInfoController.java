@@ -8,8 +8,8 @@ import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Refill;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @RestController
 public class UserInfoController {
 
-    private static final Logger logger = LogManager.getLogger(UserInfoController.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserInfoController.class);
 
     private final UserInfoService userInfoService;
 
