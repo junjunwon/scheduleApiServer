@@ -32,10 +32,11 @@ public class Scheduler {
     private final FileService fileService;
     private final FileInfoCustomRepository fileInfoCustomRepository;
     private static Path path;
-    private static final ClassPathResource resource = new ClassPathResource("temp/inputList.txt");
+    private static final ClassPathResource resource = new ClassPathResource("files/inputList.txt");
     private static final String NEWLINE = System.lineSeparator();
     private String fileExtension = "";
     private String delimiter = "";
+    private String seperator = "";
     private static boolean isCorrect;
     private static Map<String, String> map = new HashMap<>();
 
@@ -43,6 +44,13 @@ public class Scheduler {
     private void setInitData() throws IOException {
 
         StringBuffer stringBuffer = new StringBuffer();
+
+        map = new HashMap<>() {{
+            put("txt", "|");
+            put("csv", ",");
+            put("xlsx", ",");
+            put("hwp", "-");
+        }};
 
         //classloader url list get
 //        ClassLoader classLoader = Scheduler.class.getClassLoader();
@@ -56,21 +64,21 @@ public class Scheduler {
         path = getListFiles(DirPath).get(0);
 
         String FileNameInClass = resource.getFilename();
-        map = new HashMap<>() {{
-            put("txt", "|");
-            put("csv", ",");
-            put("xlsx", ",");
-            put("hwp", "-");
-        }};
+
         // TODO : 클래스 경로에 inputList.txt파일이 정상적으로 쓰기/읽기 되는지 확인.
         //확장자 추출
 //        fileExtension = getExtensionByGuava(path.getFileName().toString());
         fileExtension = getExtensionByGuava(path.getFileName().toString());
         //구분자 추출
-        stringBuffer.append("["); //특수문자 구분자를 위한 대괄호
-        stringBuffer.append(map.get(fileExtension));
-        stringBuffer.append("]");
-        delimiter = stringBuffer.toString();
+        delimiter = map.get(fileExtension);
+        seperator = delimiter;
+        if(Objects.equals(delimiter, "|")) {
+            stringBuffer.append("["); //특수문자 구분자를 위한 대괄호
+            stringBuffer.append(delimiter);
+            stringBuffer.append("]");
+            seperator = stringBuffer.toString();
+        }
+
 
         logger.debug("Hello from Log4j 2 - num : {}", path);
         logger.debug("Hello from Log4j 2 - num : {}", FileNameInClass);
@@ -78,12 +86,20 @@ public class Scheduler {
 
     private List<Path> getListFiles(Path path) throws IOException {
 
-        List<Path> result;
+        List<Path> getAllFiles;
+        List<Path> result = new ArrayList<>();
+
         try(Stream<Path> walk = Files.walk(path)) {
-            result = walk.filter(Files::isRegularFile)
+            getAllFiles = walk.filter(Files::isRegularFile)
                     .collect(Collectors.toList());
         }
 
+        for(int i = 0; i < getAllFiles.size(); i++) {
+            Path element = getAllFiles.get(i);
+            fileExtension = getExtensionByGuava(element.getFileName().toString());
+
+            if(map.containsKey(fileExtension)) result.add(element);
+        }
         return result;
     }
 
@@ -93,8 +109,8 @@ public class Scheduler {
      * @author jh.won
      * @since 2022.08.21
      */
-    @Scheduled(cron = "0 0 0/1 * * *") //1시간마다 도는 스케줄러
-//    @Scheduled(fixedRate = 30000)
+//    @Scheduled(cron = "0 0 0/1 * * *") //1시간마다 도는 스케줄러
+    @Scheduled(fixedRate = 10000)
     public void writeValueInFile() throws IOException {
         StringBuffer stringBuffer = new StringBuffer();
 
@@ -108,11 +124,11 @@ public class Scheduler {
         int revenue = getRandomNumberUsingNextInt(1000, 100000);
 
         String contentLine = stringBuffer
-                .append(hourOfToday).append("|")
-                .append(joinMemberCnt).append("|")
-                .append(leaveMemberCnt).append("|")
-                .append(payment).append("|")
-                .append(cost).append("|")
+                .append(hourOfToday).append(delimiter)
+                .append(joinMemberCnt).append(delimiter)
+                .append(leaveMemberCnt).append(delimiter)
+                .append(payment).append(delimiter)
+                .append(cost).append(delimiter)
                 .append(revenue)
                 .append(NEWLINE)
                 .toString();
@@ -123,8 +139,8 @@ public class Scheduler {
     }
 
     //    @Scheduled(cron = "0 0 00 * * *", zone = "Asia/Seoul")
-        @Scheduled(cron = "0 0 22 * * *", zone = "Asia/Seoul")
-//    @Scheduled(fixedRate = 300000)
+//        @Scheduled(cron = "0 0 20 * * *", zone = "Asia/Seoul")
+    @Scheduled(fixedRate = 60000)
     public void getFileListScheduler() {
 
         try {
@@ -145,10 +161,10 @@ public class Scheduler {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime time;
-        LocalDateTime today = LocalDateTime.now();
         int isExist;
+
         for(String content : contentList) {
-            String[] contentLine = content.split(delimiter);
+            String[] contentLine = content.split(seperator);
             time = LocalDateTime.parse(contentLine[0], formatter);
             isExist = fileInfoCustomRepository.findEqualDateTime(time);
             if(isExist == 0) {
@@ -173,7 +189,7 @@ public class Scheduler {
 
     private boolean checkContentFiles(List<String> contentList) {
         for(String content : contentList) {
-            String[] contentLine = content.split(delimiter);
+            String[] contentLine = content.split(seperator);
             //값이 누락된 경우
             if(contentLine.length != 6) {
                 return false;
