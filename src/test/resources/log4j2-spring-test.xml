@@ -9,9 +9,6 @@
         <Logger name="org.junit" level="warn" />
         <Logger name="org.junit" level="info" />
         <Logger name="example" level="warn" />
-        <!--
-        <Logger name="example.callbacks" level="info" />
-        -->
         <Logger name="org.junit.vintage.engine.discovery" level="error" />
         <Root level="error">
             <AppenderRef ref="Console" />

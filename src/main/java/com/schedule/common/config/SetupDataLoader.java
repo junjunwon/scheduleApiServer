@@ -1,7 +1,5 @@
 package com.schedule.common.config;
 
-import com.schedule.domain.account.UserInfo;
-import com.schedule.domain.account.UserInfoRepository;
 import com.schedule.dto.account.UserInfoSaveRequestDto;
 import com.schedule.service.account.UserInfoService;
 import lombok.RequiredArgsConstructor;

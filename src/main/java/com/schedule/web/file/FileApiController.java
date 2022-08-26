@@ -39,7 +39,6 @@ public class FileApiController {
 
         //rate limit performance 측정
         //1시간에 10개의 요청을 처리할 수 있는 Bucket 생성
-//        Bandwidth limit = Bandwidth.classic(10, Refill.intervally(10, Duration.ofHours(1)));
         Bandwidth limit = Bandwidth.classic(5, Refill.intervally(5, Duration.ofSeconds(20)));
         this.bucket = Bucket.builder()
                 .addLimit(limit)
