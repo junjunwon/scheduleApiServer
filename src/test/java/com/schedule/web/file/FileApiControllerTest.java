@@ -1,4 +1,4 @@
-package com.schedule.web;
+package com.schedule.web.file;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.schedule.domain.file.FileInfo;
@@ -31,6 +31,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class FileApiControllerTest {
