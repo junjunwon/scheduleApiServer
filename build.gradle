@@ -65,6 +65,8 @@ dependencies {
 
 	//rate limit bucket4j Core > 7.6.0
 	implementation 'com.github.vladimir-bukhtoyarov:bucket4j-core:7.6.0'
+
+	implementation 'commons-io:commons-io:2.6'
 }
 
 //querydsl 추가 시작
