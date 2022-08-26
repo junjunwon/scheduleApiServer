@@ -116,9 +116,8 @@ public class Scheduler {
 
         StringBuffer stringBuffer = new StringBuffer();
 
-        // TODO 테스트할때는 :mm:ss 추가하기
-//        String hourOfToday = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String hourOfToday = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        // TODO : date format 형식 체크
+        String hourOfToday = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH"));
         int joinMemberCnt = getRandomNumberUsingNextInt(1, 99);
         int leaveMemberCnt = getRandomNumberUsingNextInt(1, 99);
         int payment = getRandomNumberUsingNextInt(1000, 100000);
@@ -164,7 +163,8 @@ public class Scheduler {
 
     private void saveContentFiles(List<String> contentList) {
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        // TODO : date format 형식 체크
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH");
         LocalDateTime time;
         int isExist;
 

@@ -15,20 +15,20 @@
             <PatternLayout pattern="${BASIC_FORMAT}"/>
         </Console>
         <!--로그 파일-->
-        <RollingFile name="FileInfoFile" fileName="${BASE_DIR}/fileInfo.log" filePattern="${BASE_DIR}/fileInfo_%d{yyyy-MM-dd hh:mm}.log">
+        <RollingFile name="FileInfoFile" fileName="${BASE_DIR}/fileInfo.log" filePattern="${BASE_DIR}/fileInfo_%d{yyyy-MM-dd-hh}.log">
             <PatternLayout pattern="${PERFORMANCE_FORMAT}"/>
             <Policies>
 <!--                 매일(yyyy-MM-dd) log zip파일 생성-->
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
             </Policies>
         </RollingFile>
-        <RollingFile name="UserInfoFile" fileName="${BASE_DIR}/userInfo.log" filePattern="${BASE_DIR}/userInfo_%d{yyyy-MM-dd hh:mm}.log">
+        <RollingFile name="UserInfoFile" fileName="${BASE_DIR}/userInfo.log" filePattern="${BASE_DIR}/userInfo_%d{yyyy-MM-dd-hh}.log">
             <PatternLayout pattern="${PERFORMANCE_FORMAT}"/>
             <Policies>
                     <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
             </Policies>
         </RollingFile>
-        <RollingFile name="ProcessFile" fileName="${BASE_DIR}/log.log" filePattern="${BASE_DIR}/log_%d{yyyy-MM-dd hh:mm}.log">
+        <RollingFile name="ProcessFile" fileName="${BASE_DIR}/log.log" filePattern="${BASE_DIR}/log_%d{yyyy-MM-dd-hh}.log">
             <PatternLayout pattern="${BASIC_FORMAT}"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
