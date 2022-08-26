@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class ScheduleApiServerApplication {
 
 	public static final String APPLICATION_LOCATIONS = "spring.config.location="
-			+"classpath:application-real.yml";
+			+"classpath:application-real.properties";
 //			+"classpath:application.properties";
 
 	public static void main(String[] args) {
