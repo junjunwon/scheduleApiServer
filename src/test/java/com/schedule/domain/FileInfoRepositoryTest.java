@@ -31,7 +31,7 @@ public class FileInfoRepositoryTest {
 
     @AfterEach
     public void cleanup() {
-//        fileInfoRepository.deleteAll();
+        fileInfoRepository.deleteAll();
     }
 
     @Test

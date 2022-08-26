@@ -17,12 +17,9 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -39,7 +36,6 @@ public class Scheduler {
     private final FileInfoCustomRepository fileInfoCustomRepository;
     private static Path path;
     private static ClassPathResource resourceDir = null;
-//    private static final ClassPathResource resourceDir = new ClassPathResource("files/");
     private static final String NEWLINE = System.lineSeparator();
     private String fileExtension = "";
     private String delimiter = "";
@@ -61,11 +57,6 @@ public class Scheduler {
 
         //FileNotFoundException 방지
         String filePath =  "/files";
-//        resourceDir = new ClassPathResource(filePath);
-//        if(resourceDir.exists() == false){
-//            logger.error("Invalid filePath : {}", filePath);
-//            throw new IllegalArgumentException();
-//        }
 
         InputStream inputStream = new ClassPathResource(filePath).getInputStream();
         File somethingFile = File.createTempFile("test", ".txt");
@@ -119,8 +110,7 @@ public class Scheduler {
      * @author jh.won
      * @since 2022.08.21
      */
-//    @Scheduled(cron = "0 0 0/1 * * *") //1시간마다 도는 스케줄러
-    @Scheduled(cron = "0 0/2 * * * *") //1시간마다 도는 스케줄러
+    @Scheduled(cron = "0 0 0/1 * * *") //1시간마다 도는 스케줄러
     public void writeValueInFile() throws IOException {
         // TODO : check 후 제거
         logger.info("Start writeValueInFile... - path : {}");
@@ -149,18 +139,13 @@ public class Scheduler {
 
         logger.info("Check value for writing... - a content : {}",contentLine);
 
-//        appendWriteToFile(path, "2022-07-22 01|32|4|45100|27300|95000"+NEWLINE);
-//        appendWriteToFile(Path.of(resource.getURI()), contentLine);
         appendWriteToFile(path, contentLine);
     }
 
-//        @Scheduled(cron = "0 0 00 * * *", zone = "Asia/Seoul")
-        @Scheduled(cron = "0 0/1 * * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 00 * * *", zone = "Asia/Seoul")
     public void getFileListScheduler() {
 
         try {
-            // TODO : check 후 제거
-            logger.info("Start getFileListScheduler... - path : {}",path);
             List<String> contentList = Files.readAllLines(path);
             //체크
             isCorrect = checkContentFiles(contentList);

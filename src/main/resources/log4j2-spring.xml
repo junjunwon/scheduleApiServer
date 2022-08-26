@@ -51,7 +51,11 @@
         <Logger name="org.springframework" level="INFO" additivity="false">
             <AppenderRef ref="BasicConsole" />
         </Logger>
-        <Root level="ERROR">
+<!--        <Root level="ERROR">-->
+<!--            <AppenderRef ref="BasicConsole" />-->
+<!--            <AppenderRef ref="ProcessFile"/>-->
+<!--        </Root>-->
+        <Root level="INFO">
             <AppenderRef ref="BasicConsole" />
             <AppenderRef ref="ProcessFile"/>
         </Root>
