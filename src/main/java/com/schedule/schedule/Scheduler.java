@@ -14,6 +14,7 @@ import org.springframework.util.ObjectUtils;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
@@ -35,8 +36,8 @@ public class Scheduler {
     private final FileService fileService;
     private final FileInfoCustomRepository fileInfoCustomRepository;
     private static Path path;
-    private static final ClassPathResource resource = new ClassPathResource("files/inputList.txt");
-    private static final ClassPathResource resourceDir = new ClassPathResource("files/");
+    private static ClassPathResource resourceDir = null;
+//    private static final ClassPathResource resourceDir = new ClassPathResource("files/");
     private static final String NEWLINE = System.lineSeparator();
     private String fileExtension = "";
     private String delimiter = "";
@@ -47,10 +48,7 @@ public class Scheduler {
         map = new HashMap<>() {{
             put("txt", "|");
             put("csv", ",");
-            put("xlsx", ",");
-            put("doc", ",");
-            put("docx", ",");
-            put("hwp", ",");
+            // TODO : 파일 형식 확장성 고려
         }};
     }
 
@@ -58,24 +56,17 @@ public class Scheduler {
     private void setInitData() throws IOException {
 
         StringBuffer stringBuffer = new StringBuffer();
-//        String temp = "";
-////        classloader url list get
-//        ClassLoader classLoader = Scheduler.class.getClassLoader();
-//        URL[] urls = ((URLClassLoader)classLoader).getURLs();
-//        for(int i = 0; i<Arrays.stream(urls).toList().size(); i++) {
-//            if(Arrays.stream(urls).toList().get(1).getPath().contains("resources")) {
-//                temp = Arrays.stream(urls).toList().get(1).getPath();
-//                return;
-//            }
-//        }
-//        File folder = new File(temp+"files");
-//        folder.mkdir();
-//        path = Path.of(temp);
 
-        //resource file 경로에 저장
-//        Path DirPath = Paths.get("src/main/resources/files/");
-//        Path DirPath = resource.getFile().toPath();
+        //FileNotFoundException 방지
+        String filePath =  "/files";
+        resourceDir = new ClassPathResource(filePath);
+        if(resourceDir.exists() == false){
+            logger.error("Invalid filePath : {}", filePath);
+            throw new IllegalArgumentException();
+        }
+
         Path DirPath = resourceDir.getFile().toPath();
+
         if(ObjectUtils.isEmpty(getListFiles(DirPath).get(0))) {
             throw new IOException("FILE_NONE_EXIST_EXCEPTION");
         }
@@ -119,7 +110,7 @@ public class Scheduler {
      * @author jh.won
      * @since 2022.08.21
      */
-    @Scheduled(cron = "0 0 0/1 * * *") //1시간마다 도는 스케줄러
+//    @Scheduled(cron = "0 0 0/1 * * *") //1시간마다 도는 스케줄러
     @Scheduled(cron = "0 0/2 * * * *") //1시간마다 도는 스케줄러
     public void writeValueInFile() throws IOException {
         // TODO : check 후 제거
