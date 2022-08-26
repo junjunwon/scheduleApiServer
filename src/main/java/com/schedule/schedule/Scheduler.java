@@ -4,8 +4,10 @@ import com.schedule.domain.file.FileInfoCustomRepository;
 import com.schedule.dto.file.FileInfoSaveRequestDto;
 import com.schedule.service.file.FileService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -59,13 +61,20 @@ public class Scheduler {
 
         //FileNotFoundException 방지
         String filePath =  "/files";
-        resourceDir = new ClassPathResource(filePath);
-        if(resourceDir.exists() == false){
-            logger.error("Invalid filePath : {}", filePath);
-            throw new IllegalArgumentException();
-        }
+//        resourceDir = new ClassPathResource(filePath);
+//        if(resourceDir.exists() == false){
+//            logger.error("Invalid filePath : {}", filePath);
+//            throw new IllegalArgumentException();
+//        }
 
-        Path DirPath = resourceDir.getFile().toPath();
+        InputStream inputStream = new ClassPathResource(filePath).getInputStream();
+        File somethingFile = File.createTempFile("test", ".txt");
+        try {
+            FileUtils.copyInputStreamToFile(inputStream, somethingFile);
+        } finally {
+            IOUtils.closeQuietly(inputStream);
+        }
+        Path DirPath = somethingFile.toPath();
 
         if(ObjectUtils.isEmpty(getListFiles(DirPath).get(0))) {
             throw new IOException("FILE_NONE_EXIST_EXCEPTION");
