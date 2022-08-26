@@ -38,19 +38,22 @@ public class Scheduler {
     private String delimiter = "";
     private String seperator = "";
     private static boolean isCorrect;
-    private static Map<String, String> map = new HashMap<>();
+    private static Map<String, String> map;
+    static {
+        map = new HashMap<>() {{
+            put("txt", "|");
+            put("csv", ",");
+            put("xlsx", ",");
+            put("doc", ",");
+            put("docx", ",");
+            put("hwp", ",");
+        }};
+    }
 
     @PostConstruct
     private void setInitData() throws IOException {
 
         StringBuffer stringBuffer = new StringBuffer();
-
-        map = new HashMap<>() {{
-            put("txt", "|");
-            put("csv", ",");
-            put("xlsx", ",");
-            put("hwp", "-");
-        }};
 
         //classloader url list get
 //        ClassLoader classLoader = Scheduler.class.getClassLoader();
@@ -67,7 +70,6 @@ public class Scheduler {
 
         // TODO : 클래스 경로에 inputList.txt파일이 정상적으로 쓰기/읽기 되는지 확인.
         //확장자 추출
-//        fileExtension = getExtensionByGuava(path.getFileName().toString());
         fileExtension = getExtensionByGuava(path.getFileName().toString());
         //구분자 추출
         delimiter = map.get(fileExtension);
@@ -78,14 +80,9 @@ public class Scheduler {
             stringBuffer.append("]");
             seperator = stringBuffer.toString();
         }
-
-
-        logger.debug("Hello from Log4j 2 - num : {}", path);
-        logger.debug("Hello from Log4j 2 - num : {}", FileNameInClass);
     }
 
     private List<Path> getListFiles(Path path) throws IOException {
-
         List<Path> getAllFiles;
         List<Path> result = new ArrayList<>();
 
@@ -112,7 +109,10 @@ public class Scheduler {
 //    @Scheduled(cron = "0 0 0/1 * * *") //1시간마다 도는 스케줄러
     @Scheduled(fixedRate = 10000)
     public void writeValueInFile() throws IOException {
+        // TODO : check 후 제거
         logger.info("Start writeValueInFile... - path : {}",path);
+
+        setInitData();
 
         StringBuffer stringBuffer = new StringBuffer();
 
@@ -148,6 +148,7 @@ public class Scheduler {
     public void getFileListScheduler() {
 
         try {
+            // TODO : check 후 제거
             logger.info("Start getFileListScheduler... - path : {}",path);
             List<String> contentList = Files.readAllLines(path);
             //체크
