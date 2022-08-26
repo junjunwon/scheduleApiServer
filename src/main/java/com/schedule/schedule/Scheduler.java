@@ -12,7 +12,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,6 +36,7 @@ public class Scheduler {
     private final FileInfoCustomRepository fileInfoCustomRepository;
     private static Path path;
     private static final ClassPathResource resource = new ClassPathResource("files/inputList.txt");
+    private static final ClassPathResource resourceDir = new ClassPathResource("files/");
     private static final String NEWLINE = System.lineSeparator();
     private String fileExtension = "";
     private String delimiter = "";
@@ -54,19 +58,28 @@ public class Scheduler {
     private void setInitData() throws IOException {
 
         StringBuffer stringBuffer = new StringBuffer();
-
-        //classloader url list get
+//        String temp = "";
+////        classloader url list get
 //        ClassLoader classLoader = Scheduler.class.getClassLoader();
 //        URL[] urls = ((URLClassLoader)classLoader).getURLs();
+//        for(int i = 0; i<Arrays.stream(urls).toList().size(); i++) {
+//            if(Arrays.stream(urls).toList().get(1).getPath().contains("resources")) {
+//                temp = Arrays.stream(urls).toList().get(1).getPath();
+//                return;
+//            }
+//        }
+//        File folder = new File(temp+"files");
+//        folder.mkdir();
+//        path = Path.of(temp);
 
         //resource file 경로에 저장
-        Path DirPath = Paths.get("src/main/resources/files/");
+//        Path DirPath = Paths.get("src/main/resources/files/");
+//        Path DirPath = resource.getFile().toPath();
+        Path DirPath = resourceDir.getFile().toPath();
         if(ObjectUtils.isEmpty(getListFiles(DirPath).get(0))) {
             throw new IOException("FILE_NONE_EXIST_EXCEPTION");
         }
         path = getListFiles(DirPath).get(0);
-
-        String FileNameInClass = resource.getFilename();
 
         // TODO : 클래스 경로에 inputList.txt파일이 정상적으로 쓰기/읽기 되는지 확인.
         //확장자 추출
@@ -106,11 +119,11 @@ public class Scheduler {
      * @author jh.won
      * @since 2022.08.21
      */
-//    @Scheduled(cron = "0 0 0/1 * * *") //1시간마다 도는 스케줄러
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(cron = "0 0 0/1 * * *") //1시간마다 도는 스케줄러
+    @Scheduled(cron = "0 0/2 * * * *") //1시간마다 도는 스케줄러
     public void writeValueInFile() throws IOException {
         // TODO : check 후 제거
-        logger.info("Start writeValueInFile... - path : {}",path);
+        logger.info("Start writeValueInFile... - path : {}");
 
         setInitData();
 
@@ -141,9 +154,8 @@ public class Scheduler {
         appendWriteToFile(path, contentLine);
     }
 
-    //    @Scheduled(cron = "0 0 00 * * *", zone = "Asia/Seoul")
-//        @Scheduled(cron = "0 0 20 * * *", zone = "Asia/Seoul")
-    @Scheduled(fixedRate = 60000)
+//        @Scheduled(cron = "0 0 00 * * *", zone = "Asia/Seoul")
+        @Scheduled(cron = "0 0/1 * * * *", zone = "Asia/Seoul")
     public void getFileListScheduler() {
 
         try {
