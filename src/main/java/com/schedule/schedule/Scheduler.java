@@ -4,22 +4,19 @@ import com.schedule.domain.file.FileInfoCustomRepository;
 import com.schedule.dto.file.FileInfoSaveRequestDto;
 import com.schedule.service.file.FileService;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -55,17 +52,9 @@ public class Scheduler {
 
         StringBuffer stringBuffer = new StringBuffer();
 
+        Path DirPath = Paths.get("src/main/resources/files/");
         //FileNotFoundException 방지
         String filePath =  "/files";
-
-        InputStream inputStream = new ClassPathResource(filePath).getInputStream();
-        File somethingFile = File.createTempFile("test", ".txt");
-        try {
-            FileUtils.copyInputStreamToFile(inputStream, somethingFile);
-        } finally {
-            IOUtils.closeQuietly(inputStream);
-        }
-        Path DirPath = somethingFile.toPath();
 
         if(ObjectUtils.isEmpty(getListFiles(DirPath).get(0))) {
             throw new IOException("FILE_NONE_EXIST_EXCEPTION");
