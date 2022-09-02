@@ -1,6 +1,8 @@
 package com.schedule.web.file;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.schedule.domain.account.UserInfoContext;
 import com.schedule.domain.file.FileInfo;
 import com.schedule.domain.file.FileInfoCustomRepository;
 import com.schedule.domain.file.FileInfoRepository;
@@ -15,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,8 +30,9 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -70,7 +74,14 @@ public class FileApiControllerTest {
     }
 
     @Test
+    public void unAuthenticatedUserThenReturn401() throws Exception {
+        String url = "http://localhost:"+port+"/api/file/save";
+        this.mvc.perform(get(url))
+                .andExpect(status().isUnauthorized());
+    }
+
     @WithMockUser(roles="USER")
+    @Test
     public void File_등록된다() throws Exception {
 
         LocalDateTime time = LocalDateTime.now(); //시간
@@ -92,16 +103,8 @@ public class FileApiControllerTest {
 
         mvc.perform(post(url)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(requestDto)))
+                        .content(new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(requestDto)))
                 .andExpect(status().isOk());
-
-        ResponseEntity<Long> responseEntity = restTemplate
-                .postForEntity(url, requestDto, Long.class);
-
-
-
-        assertThat(responseEntity.getStatusCode(), is(equalTo(HttpStatus.OK)));
-        assertThat(responseEntity.getBody(), greaterThan(0L));
 
         List<FileInfo> all = fileInfoRepository.findAll();
 
@@ -109,6 +112,7 @@ public class FileApiControllerTest {
         assertThat(all.get(0).getPayment(), is(equalTo(payment)));
     }
 
+    @WithMockUser(roles="USER")
     @Test
     public void Content_수정된다() throws Exception {
 
@@ -140,20 +144,10 @@ public class FileApiControllerTest {
 
         String url = "http://localhost:"+port+"/api/file/update/"+updateId;
 
-        mvc.perform(post(url)
+        mvc.perform(put(url)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(updateRequestDto)))
+                        .content(new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(updateRequestDto)))
                 .andExpect(status().isOk());
-
-        HttpEntity<FileInfoUpdateRequestDto> requestDtoHttpEntity =
-                new HttpEntity<>(updateRequestDto);
-
-        ResponseEntity<?> responseEntity = restTemplate
-                .exchange(url, HttpMethod.PUT,
-                        requestDtoHttpEntity, Object.class);
-
-        assertThat(responseEntity.getStatusCode(), is(equalTo(HttpStatus.OK)));
-//        assertThat(responseEntity.getBody(), greaterThan(0L));
 
         FileInfo fileInfo =  fileInfoCustomRepository.findFileInfoById(updateId);
 
@@ -164,18 +158,13 @@ public class FileApiControllerTest {
         assertThat(fileInfo.getJoinMemberCnt(), is(equalTo(joinMemberCnt)));
     }
 
+    @WithMockUser(roles="USER")
     @Test
-    public void Contents_삭제한다() {
-        String url = "http://localhost:"+port+"/api/file/delete/1,2,3";
+    public void Contents_삭제한다() throws Exception {
+        String url = "http://localhost:"+port+"/api/file/delete/1";
 
-        ResponseEntity<Map> result = restTemplate.exchange(
-                url,
-                HttpMethod.DELETE,
-                HttpEntity.EMPTY,
-                Map.class
-        );
+        mvc.perform(delete(url))
+                .andExpect(status().isOk());
 
-        logger.info("STATUS IS "+ result.getBody().get("status"));
-        logger.info("MESSAGE IS "+ result.getBody().get("message"));
     }
 }
