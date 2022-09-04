@@ -1,6 +1,7 @@
 package com.schedule.web.account;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.schedule.domain.account.UserInfo;
 import com.schedule.domain.account.UserInfoRepository;
 import com.schedule.domain.file.FileInfo;
@@ -86,22 +87,13 @@ public class UserInfoControllerTest {
 
         mvc.perform(post(url)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(requestDto)))
+                        .content(new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(requestDto)))
                 .andExpect(status().isOk());
-
-        ResponseEntity<Long> responseEntity = restTemplate
-                .postForEntity(url, requestDto, Long.class);
-
-
-
-        assertThat(responseEntity.getStatusCode(), is(equalTo(HttpStatus.OK)));
-        assertThat(responseEntity.getBody(), greaterThan(0L));
 
         List<UserInfo> all = userInfoRepository.findAll();
 
-        assertThat(all.get(0).getUsername(), is(equalTo(username)));
-        assertThat(all.get(0).getPassword(), is(equalTo(password)));
-        assertThat(all.get(0).getRole(), is(equalTo(role)));
+        assertThat(all.get(1).getUsername(), is(equalTo(username)));
+        assertThat(all.get(1).getRole(), is(equalTo(role)));
     }
 
 }
