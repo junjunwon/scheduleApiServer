@@ -99,7 +99,8 @@ public class Scheduler {
      * @author jh.won
      * @since 2022.08.21
      */
-    @Scheduled(cron = "0 0 0/1 * * *") //1시간마다 도는 스케줄러
+//    @Scheduled(cron = "0 0 0/1 * * *") //1시간마다 도는 스케줄러
+    @Scheduled(cron = "0 0/1 * * * *") //1분마다 도는 스케줄러
     public void writeValueInFile() throws IOException {
         // TODO : check 후 제거
         logger.info("Start writeValueInFile... - path : {}");
@@ -131,7 +132,8 @@ public class Scheduler {
         appendWriteToFile(path, contentLine);
     }
 
-    @Scheduled(cron = "0 0 00 * * *", zone = "Asia/Seoul")
+//    @Scheduled(cron = "0 0 00 * * *", zone = "Asia/Seoul") //자정마다 도는 스케줄러
+    @Scheduled(cron = "0 0/2 * * * *", zone = "Asia/Seoul") //2분마다 도는 스케줄러
     public void getFileListScheduler() {
 
         try {
@@ -234,4 +236,5 @@ public class Scheduler {
         Random random = new Random();
         return random.nextInt(max - min) + min;
     }
+
 }
