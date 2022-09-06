@@ -71,6 +71,9 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3'
 
+	//Spring Batch
+	implementation 'org.springframework.boot:spring-boot-starter-batch'
+	testImplementation 'org.springframework.security:spring-batch-test'
 }
 
 //querydsl 추가 시작
