@@ -1,17 +1,20 @@
 spring:
   datasource:
     driver-class-name: org.h2.Driver  #h2 드라이버 설정
-    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:mem:scheduleApiServer
     username: sa
-    password: password
+    password:
   devtools:
     restart:
       enabled: false
   h2:
     console:
       enabled: true
+      path: /h2-console
   profiles:
     active: real
 logging:
   config: classpath:log4j2-spring.xml
-allowed-ips: 127.0.0.1, 127.0.0.3
+config:
+  allowedIps: 127.0.0.1, 127.0.0.3
+  filePath: /Users/wonjunho/Desktop/junho/develop/codingTest/daouTech/files
