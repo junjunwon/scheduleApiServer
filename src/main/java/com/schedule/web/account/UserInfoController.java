@@ -1,5 +1,6 @@
 package com.schedule.web.account;
 
+import com.schedule.common.enums.PricingPlan;
 import com.schedule.common.response.ErrorResponse;
 import com.schedule.common.response.Response;
 import com.schedule.dto.account.UserInfoSaveRequestDto;

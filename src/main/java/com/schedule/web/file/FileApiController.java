@@ -51,13 +51,16 @@ public class FileApiController {
     public ResponseEntity<Response> getFileList() {
 
         if(bucket.tryConsume(1)) {
-            Response response = new Response();
+
             List<FileInfoResponseDto> dtoList = fileService.findFileList();
+
+            Response response = new Response();
             response.setStatus(HttpStatus.OK);
             response.setMessage("Success getFileList!!");
             response.setData(dtoList);
+
             response.setAvailableTokens(bucket.getAvailableTokens()); // 임계치까지 남은 api호출 횟수
-            logger.info("success");
+
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         throw new BucketExceedException("title", "요청 횟수를 초과하였습니다.");
@@ -70,16 +73,12 @@ public class FileApiController {
 
             Response response = new Response();
 
-            long index = fileService.save(fileInfoSaveRequestDto);
-            if(index>0) {
-                response.setMessage("Success");
-                response.setStatus(HttpStatus.OK);
-            } else {
-                response.setMessage("Fail to save");
-            }
+            fileService.save(fileInfoSaveRequestDto);
+            response.setMessage("Success");
+            response.setStatus(HttpStatus.OK);
+
             response.setAvailableTokens(bucket.getAvailableTokens()); // 임계치까지 남은 api호출 횟수
 
-            logger.info("success");
             return new ResponseEntity<>(response, HttpStatus.OK);
 
         }
@@ -110,16 +109,13 @@ public class FileApiController {
     public ResponseEntity<Response> deleteContentsById(@PathVariable List<Long> ids) {
         if(bucket.tryConsume(1)) {
             Response response = new Response();
-            long check = fileService.deleteContentsByIds(ids);
-            if(check>0) {
-                response.setMessage("Success");
-            } else {
-                response.setMessage("Fail to delete");
-            }
+            fileService.deleteContentsByIds(ids);
+
+            response.setMessage("Success");
             response.setStatus(HttpStatus.OK);
+
             response.setAvailableTokens(bucket.getAvailableTokens()); // 임계치까지 남은 api호출 횟수
 
-            logger.info("success");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 

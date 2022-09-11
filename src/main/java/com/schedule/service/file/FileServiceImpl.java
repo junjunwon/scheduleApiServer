@@ -33,14 +33,14 @@ public class FileServiceImpl implements FileService{
 
     @Transactional
     @Override
-    public Long save(FileInfoSaveRequestDto fileInfoSaveRequestDto) {
-        return fileInfoRepository.save(fileInfoSaveRequestDto.toEntity()).getId();
+    public void save(FileInfoSaveRequestDto fileInfoSaveRequestDto) {
+        fileInfoRepository.save(fileInfoSaveRequestDto.toEntity());
     }
 
     @Transactional
     @Override
-    public Long deleteContentsByIds(List<Long> ids) {
-        return fileInfoCustomRepository.deleteByIds(ids);
+    public void deleteContentsByIds(List<Long> ids) {
+        fileInfoCustomRepository.deleteByIds(ids);
     }
 
     @Transactional

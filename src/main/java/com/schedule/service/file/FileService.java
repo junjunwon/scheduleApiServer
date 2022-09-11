@@ -27,7 +27,7 @@ public interface FileService {
      * @param fileInfoSaveRequestDto
      * @return
      */
-    Long save(FileInfoSaveRequestDto fileInfoSaveRequestDto);
+    void save(FileInfoSaveRequestDto fileInfoSaveRequestDto);
 
     /**
      * content 단일/다중 삭제
@@ -37,7 +37,7 @@ public interface FileService {
      * @param ids
      * @return
      */
-    Long deleteContentsByIds(List<Long> ids);
+    void deleteContentsByIds(List<Long> ids);
 
     /**
      * content 수정
