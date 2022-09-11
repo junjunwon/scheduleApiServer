@@ -50,9 +50,6 @@ public class UserInfoController {
 
     @PostMapping("/createUser")
     public ResponseEntity<?> createUser(@Valid @RequestBody final UserInfoSaveRequestDto userInfoSaveRequestDto) {
-//        HttpHeaders headers= new HttpHeaders();
-//        headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
-
         if(bucket.tryConsume(1)) {
 
             Response response = new Response();

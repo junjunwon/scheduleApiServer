@@ -87,23 +87,19 @@ public class FileApiController {
         throw new BucketExceedException("title", "요청 횟수를 초과하였습니다.");
     }
 
-    @PutMapping("/file/update/{id}")
+    @PatchMapping("/file/update/{id}")
     public ResponseEntity<?> updateContentById(@PathVariable Long id,
-                                               @Validated @RequestBody final FileInfoUpdateRequestDto fileInfoUpdateRequestDto) {
+                                               @Valid @RequestBody final FileInfoUpdateRequestDto fileInfoUpdateRequestDto) {
 
         if(bucket.tryConsume(1)) {
 
             Response response = new Response();
-            Long index = fileService.updateContentById(id, fileInfoUpdateRequestDto);
-            if(index > 0L) {
-                response.setMessage("Success");
-                response.setStatus(HttpStatus.OK);
-            } else {
-                response.setMessage("Fail to update");
-            }
+            fileService.updateContentById(id, fileInfoUpdateRequestDto);
+
+            response.setMessage("Success");
+            response.setStatus(HttpStatus.OK);
             response.setAvailableTokens(bucket.getAvailableTokens()); // 임계치까지 남은 api호출 횟수
 
-            logger.info("success");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         throw new BucketExceedException("title", "요청 횟수를 초과하였습니다.");

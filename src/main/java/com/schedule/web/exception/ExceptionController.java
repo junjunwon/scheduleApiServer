@@ -40,12 +40,12 @@ public class ExceptionController {
     }
 
 
-    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
-    @ExceptionHandler(HttpClientErrorException.class)
-    @ResponseBody
-    public void basicException(HttpClientErrorException e) {
-        System.out.println(e);
-    }
+//    //TODO : 누락된 Exception이 있을 경우 해당 Exception 로직을 수행하여, 어떤 예외처리가 있는지 파악.
+//    @ExceptionHandler(Exception.class)
+//    @ResponseBody
+//    public void basicException(Exception e) {
+//        log.info("Exception 처리가 필요합니다! Exception is {}", e);
+//    }
 
     @ExceptionHandler(RootException.class)
     @ResponseBody

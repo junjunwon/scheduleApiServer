@@ -48,5 +48,5 @@ public interface FileService {
      * @param fileInfoUpdateRequestDto
      * @return
      */
-    Long updateContentById(Long id, FileInfoUpdateRequestDto fileInfoUpdateRequestDto);
+    void updateContentById(Long id, FileInfoUpdateRequestDto fileInfoUpdateRequestDto);
 }
