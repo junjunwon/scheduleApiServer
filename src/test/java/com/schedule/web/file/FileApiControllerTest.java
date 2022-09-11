@@ -24,12 +24,15 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -44,9 +47,6 @@ public class FileApiControllerTest {
 
     @LocalServerPort
     private int port;
-
-    @Autowired
-    private TestRestTemplate restTemplate;
 
     @Autowired
     private FileInfoRepository fileInfoRepository;
@@ -75,8 +75,8 @@ public class FileApiControllerTest {
 
     @Test
     public void unAuthenticatedUserThenReturn401() throws Exception {
-        String url = "http://localhost:"+port+"/api/file/save";
-        this.mvc.perform(get(url))
+//        String url = "http://localhost:"+port+"/api/file/save";
+        this.mvc.perform(get("/api/file/save"))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -99,11 +99,9 @@ public class FileApiControllerTest {
                 .revenue(revenue)
                 .build();
 
-        String url = "http://localhost:"+port+"/api/file/save";
-
-        mvc.perform(post(url)
+        mvc.perform(post("/api/file/save")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(requestDto)))
+                        .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
                 .andDo(print());
 
@@ -188,9 +186,23 @@ public class FileApiControllerTest {
     @WithMockUser(roles="USER")
     @Test
     public void Contents_삭제한다() throws Exception {
-        String url = "http://localhost:"+port+"/api/file/delete/1";
 
-        mvc.perform(delete(url))
+        //given
+        List<FileInfo> requestFileInfos = IntStream.range(1,5)
+                .mapToObj(i -> {
+                    return FileInfo.builder()
+                            .joinMemberCnt(10 + i)
+                            .leaveMemberCnt(20 + i)
+                            .cost(10_000 + i)
+                            .time(LocalDateTime.now())
+                            .payment(90_000 + i)
+                            .revenue(300 + i)
+                            .build();
+                })
+                .collect(Collectors.toList());
+        fileInfoRepository.saveAll(requestFileInfos);
+
+        mvc.perform(delete("/api/file/delete/{deleteId}", requestFileInfos.get(0).getId()))
                 .andExpect(status().isOk())
                 .andDo(print());
 
