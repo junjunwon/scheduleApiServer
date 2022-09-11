@@ -12,7 +12,6 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class UserInfoSaveRequestDto {
 
-    private Long id;
     @NotBlank(message = "USERNAME_IS_MANDATORY")
     private String username;
     @NotBlank(message = "PASSWORD_IS_MANDATORY")
@@ -21,9 +20,8 @@ public class UserInfoSaveRequestDto {
     private String role;
 
     @Builder
-    public UserInfoSaveRequestDto(Long id, String username,
+    public UserInfoSaveRequestDto(String username,
                                   String password, String role) {
-        this.id = id;
         this.username = username;
         this.password = password;
         this.role = role;
@@ -31,7 +29,6 @@ public class UserInfoSaveRequestDto {
 
     public UserInfo toEntity() {
         return UserInfo.builder()
-                .id(id)
                 .username(username)
                 .password(new BCryptPasswordEncoder().encode(password))
                 .role(role)

@@ -29,8 +29,11 @@ class CustomAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Value("${allowed-ips}")
-    private Set<String> allowedIps;
+//    @Value("${allowedIps}")
+//    private Set<String> allowedIps;
+
+    @Autowired
+    private ApplicationConfig applicationConfig;
 
     public CustomAuthenticationProvider() {
         allowedIpList.add("0:0:0:0:0:0:0:1");
@@ -41,7 +44,7 @@ class CustomAuthenticationProvider implements AuthenticationProvider {
         WebAuthenticationDetails details = (WebAuthenticationDetails) authentication.getDetails();
         String userIp = details.getRemoteAddress();
         logger.info("Client Ip is ....{}", userIp);
-        if(!allowedIps.contains(userIp)) {
+        if(!applicationConfig.getAllowedIps().contains(userIp)) {
             throw new BadCredentialsException("Invalid IP Address");
         }
 

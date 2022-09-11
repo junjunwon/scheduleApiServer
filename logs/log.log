@@ -1,0 +1,2 @@
+[2022-09-04 14:05:31]-[ERROR]-[logExceptions]-Database is already closed (to disable automatic closing at VM shutdown, add ";DB_CLOSE_ON_EXIT=FALSE" to the db URL) [90121-214]
+[2022-09-04 14:05:31]-[ERROR]-[logExceptions]-Database is already closed (to disable automatic closing at VM shutdown, add ";DB_CLOSE_ON_EXIT=FALSE" to the db URL) [90121-214]

@@ -1,8 +1,10 @@
 package com.schedule.web.account;
 
+import com.schedule.common.enums.PricingPlan;
 import com.schedule.common.response.ErrorResponse;
 import com.schedule.common.response.Response;
 import com.schedule.dto.account.UserInfoSaveRequestDto;
+import com.schedule.exception.BucketExceedException;
 import com.schedule.service.account.UserInfoService;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.List;
@@ -47,19 +50,8 @@ public class UserInfoController {
     }
 
     @PostMapping("/createUser")
-    public ResponseEntity<?> createUser(@Validated @RequestBody final UserInfoSaveRequestDto userInfoSaveRequestDto,
-                                       BindingResult bindingResult) {
-        HttpHeaders headers= new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
-
+    public ResponseEntity<?> createUser(@Valid @RequestBody final UserInfoSaveRequestDto userInfoSaveRequestDto) {
         if(bucket.tryConsume(1)) {
-
-            //유효성 검사
-            if (bindingResult.hasErrors()) {
-                List<String> errors = bindingResult.getAllErrors().stream().map(e -> e.getDefaultMessage()).collect(Collectors.toList());
-                return ResponseEntity.ok(new ErrorResponse("404", "Validation failure", errors));
-                // or 404 request
-            }
 
             Response response = new Response();
 
@@ -75,9 +67,9 @@ public class UserInfoController {
             response.setAvailableTokens(bucket.getAvailableTokens()); // 임계치까지 남은 api호출 횟수
 
             logger.info("success");
-            return new ResponseEntity<>(response, headers, HttpStatus.OK);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        logger.info("too many requests");
-        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
+
+        throw new BucketExceedException("title", "요청 횟수를 초과하였습니다.");
     }
 }

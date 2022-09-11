@@ -1,6 +1,7 @@
 package com.schedule.web.file;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.schedule.domain.file.FileInfo;
 import com.schedule.domain.file.FileInfoCustomRepository;
 import com.schedule.domain.file.FileInfoRepository;
@@ -23,12 +24,15 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -38,11 +42,11 @@ public class FileApiControllerTest {
 
     private static final Logger logger = LogManager.getLogger(FileApiControllerTest.class);
 
+    @Autowired
+    ObjectMapper objectMapper;
+
     @LocalServerPort
     private int port;
-
-    @Autowired
-    private TestRestTemplate restTemplate;
 
     @Autowired
     private FileInfoRepository fileInfoRepository;
@@ -70,7 +74,14 @@ public class FileApiControllerTest {
     }
 
     @Test
+    public void unAuthenticatedUserThenReturn401() throws Exception {
+//        String url = "http://localhost:"+port+"/api/file/save";
+        this.mvc.perform(get("/api/file/save"))
+                .andExpect(status().isUnauthorized());
+    }
+
     @WithMockUser(roles="USER")
+    @Test
     public void File_등록된다() throws Exception {
 
         LocalDateTime time = LocalDateTime.now(); //시간
@@ -88,20 +99,11 @@ public class FileApiControllerTest {
                 .revenue(revenue)
                 .build();
 
-        String url = "http://localhost:"+port+"/api/file/save";
-
-        mvc.perform(post(url)
+        mvc.perform(post("/api/file/save")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(requestDto)))
-                .andExpect(status().isOk());
-
-        ResponseEntity<Long> responseEntity = restTemplate
-                .postForEntity(url, requestDto, Long.class);
-
-
-
-        assertThat(responseEntity.getStatusCode(), is(equalTo(HttpStatus.OK)));
-        assertThat(responseEntity.getBody(), greaterThan(0L));
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isOk())
+                .andDo(print());
 
         List<FileInfo> all = fileInfoRepository.findAll();
 
@@ -109,8 +111,10 @@ public class FileApiControllerTest {
         assertThat(all.get(0).getPayment(), is(equalTo(payment)));
     }
 
+    @WithMockUser(roles="USER")
     @Test
-    public void Content_수정된다() throws Exception {
+    @DisplayName("Content 수정 테스트")
+    public void editContent() throws Exception {
 
         FileInfo savedFileInfo = fileInfoRepository.save(FileInfo.builder()
                 .time(LocalDateTime.now())
@@ -123,59 +127,84 @@ public class FileApiControllerTest {
 
         Long updateId = savedFileInfo.getId();
 
-        int joinMemberCnt = 99; //가입자수
-        int leaveMemberCnt = 99; //탈퇴자수
-        int payment = 99_999; //결제금액
-        int cost = 88_888; //사용금액
-        int revenue = 77_777; //매출
-
-        FileInfoUpdateRequestDto updateRequestDto =
+        FileInfoUpdateRequestDto update =
                 FileInfoUpdateRequestDto.builder()
-                        .joinMemberCnt(joinMemberCnt)
-                        .leaveMemberCnt(leaveMemberCnt)
-                        .payment(payment)
-                        .cost(cost)
-                        .revenue(revenue)
+                        .joinMemberCnt(99)
+                        .leaveMemberCnt(99)
+                        .payment(99_999)
+                        .cost(99_999)
+                        .revenue(77_777)
                         .build();
 
-        String url = "http://localhost:"+port+"/api/file/update/"+updateId;
-
-        mvc.perform(post(url)
+        mvc.perform(patch("/api/file/update/{updateId}", updateId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(updateRequestDto)))
-                .andExpect(status().isOk());
-
-        HttpEntity<FileInfoUpdateRequestDto> requestDtoHttpEntity =
-                new HttpEntity<>(updateRequestDto);
-
-        ResponseEntity<?> responseEntity = restTemplate
-                .exchange(url, HttpMethod.PUT,
-                        requestDtoHttpEntity, Object.class);
-
-        assertThat(responseEntity.getStatusCode(), is(equalTo(HttpStatus.OK)));
-//        assertThat(responseEntity.getBody(), greaterThan(0L));
+                        .content(objectMapper.writeValueAsString(update)))
+                .andExpect(status().isOk())
+                .andDo(print());
 
         FileInfo fileInfo =  fileInfoCustomRepository.findFileInfoById(updateId);
 
-        assertThat(fileInfo.getPayment(), is(equalTo(payment)));
-        assertThat(fileInfo.getCost(), is(equalTo(cost)));
-        assertThat(fileInfo.getRevenue(), is(equalTo(revenue)));
-        assertThat(fileInfo.getLeaveMemberCnt(), is(equalTo(leaveMemberCnt)));
-        assertThat(fileInfo.getJoinMemberCnt(), is(equalTo(joinMemberCnt)));
+        assertThat(fileInfo.getPayment(), is(equalTo(update.getPayment())));
+        assertThat(fileInfo.getCost(), is(equalTo(update.getCost())));
+        assertThat(fileInfo.getRevenue(), is(equalTo(update.getRevenue())));
+        assertThat(fileInfo.getLeaveMemberCnt(), is(equalTo(update.getLeaveMemberCnt())));
+        assertThat(fileInfo.getJoinMemberCnt(), is(equalTo(update.getJoinMemberCnt())));
     }
 
+    @WithMockUser(roles="USER")
     @Test
-    public void Contents_삭제한다() {
-        String url = "http://localhost:"+port+"/api/file/delete/1,2,3";
+    @DisplayName("Content 수정 테스트 null값 전송 시 InvalidException 처리 테스트")
+    public void failTestForEditContent() throws Exception {
 
-        ResponseEntity<Map> result = restTemplate.exchange(
-                url,
-                HttpMethod.DELETE,
-                HttpEntity.EMPTY,
-                Map.class
-        );
+        FileInfo savedFileInfo = fileInfoRepository.save(FileInfo.builder()
+                .time(LocalDateTime.now())
+                .joinMemberCnt(32)
+                .leaveMemberCnt(40)
+                .payment(50_000)
+                .cost(40_000)
+                .revenue(30_000)
+                .build());
 
-        logger.info("STATUS IS "+ result.getBody().get("status"));
-        logger.info("MESSAGE IS "+ result.getBody().get("message"));
+        Long updateId = savedFileInfo.getId();
+
+        FileInfoUpdateRequestDto update =
+                FileInfoUpdateRequestDto.builder()
+                        .joinMemberCnt(-1)
+                        .leaveMemberCnt(99)
+                        .payment(99_999)
+                        .cost(99_999)
+                        .revenue(77_777)
+                        .build();
+
+        mvc.perform(patch("/api/file/update/{updateId}", updateId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(update)))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @WithMockUser(roles="USER")
+    @Test
+    public void Contents_삭제한다() throws Exception {
+
+        //given
+        List<FileInfo> requestFileInfos = IntStream.range(1,5)
+                .mapToObj(i -> {
+                    return FileInfo.builder()
+                            .joinMemberCnt(10 + i)
+                            .leaveMemberCnt(20 + i)
+                            .cost(10_000 + i)
+                            .time(LocalDateTime.now())
+                            .payment(90_000 + i)
+                            .revenue(300 + i)
+                            .build();
+                })
+                .collect(Collectors.toList());
+        fileInfoRepository.saveAll(requestFileInfos);
+
+        mvc.perform(delete("/api/file/delete/{deleteId}", requestFileInfos.get(0).getId()))
+                .andExpect(status().isOk())
+                .andDo(print());
+
     }
 }

@@ -3,24 +3,16 @@ package com.schedule.web.account;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.schedule.domain.account.UserInfo;
 import com.schedule.domain.account.UserInfoRepository;
-import com.schedule.domain.file.FileInfo;
 import com.schedule.dto.account.UserInfoSaveRequestDto;
-import com.schedule.web.file.FileApiControllerTest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,24 +21,25 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(SpringExtension.class)
+@AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserInfoControllerTest {
 
     private static final Logger logger = LogManager.getLogger(UserInfoControllerTest.class);
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @LocalServerPort
     private int port;
-
-    @Autowired
-    private TestRestTemplate restTemplate;
 
     @Autowired
     private WebApplicationContext context;
@@ -82,26 +75,67 @@ public class UserInfoControllerTest {
                 .role(role)
                 .build();
 
-        String url = "http://localhost:"+port+"/api/createUser";
-
-        mvc.perform(post(url)
+        mvc.perform(post("/api/createUser")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(requestDto)))
-                .andExpect(status().isOk());
-
-        ResponseEntity<Long> responseEntity = restTemplate
-                .postForEntity(url, requestDto, Long.class);
-
-
-
-        assertThat(responseEntity.getStatusCode(), is(equalTo(HttpStatus.OK)));
-        assertThat(responseEntity.getBody(), greaterThan(0L));
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isOk())
+                .andDo(print());
 
         List<UserInfo> all = userInfoRepository.findAll();
 
-        assertThat(all.get(0).getUsername(), is(equalTo(username)));
-        assertThat(all.get(0).getPassword(), is(equalTo(password)));
-        assertThat(all.get(0).getRole(), is(equalTo(role)));
+        assertEquals(all.get(0).getUsername(), username);
+        assertEquals(all.get(0).getRole(), role);
     }
 
+    @Test
+    @WithMockUser(roles="USER")
+    @DisplayName("유저 등록 시 유저 이름이 없을 경우 InvalidRequest Exception 처리")
+    public void failTestForcreateUser() throws Exception {
+
+        UserInfoSaveRequestDto requestDto = UserInfoSaveRequestDto.builder()
+                .password("testUser")
+                .role("ROLE_USER")
+                .build();
+
+        mvc.perform(post("/api/createUser")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @WithMockUser(roles="USER")
+    @DisplayName("유저 등록 시 비밀번호가 없을 경우 InvalidRequest Exception 처리")
+    public void failTestForcreateUser2() throws Exception {
+
+        UserInfoSaveRequestDto requestDto = UserInfoSaveRequestDto.builder()
+                .username("testUser")
+                .role("ROLE_USER")
+                .build();
+
+        mvc.perform(post("/api/createUser")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @WithMockUser(roles="GUEST")
+    @DisplayName("유저 등록 시 권한이 없을 경우 실패 테스트")
+    public void failTestForAuthority() throws Exception {
+
+        UserInfoSaveRequestDto requestDto = UserInfoSaveRequestDto.builder()
+                .username("testUser")
+                .role("ROLE_USER")
+                .build();
+
+        mvc.perform(post("/api/createUser")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isForbidden())
+                .andDo(print());
+    }
 }
+

@@ -1,11 +1,13 @@
 package com.schedule.schedule;
 
+import com.schedule.common.config.ApplicationConfig;
 import com.schedule.domain.file.FileInfoCustomRepository;
 import com.schedule.dto.file.FileInfoSaveRequestDto;
 import com.schedule.service.file.FileService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -32,6 +34,12 @@ public class Scheduler {
     private final FileService fileService;
     private final FileInfoCustomRepository fileInfoCustomRepository;
     private static Path path;
+
+//    @Value("${filePath}")
+//    private String filePath;
+
+    private final ApplicationConfig applicationConfig;
+
     private static ClassPathResource resourceDir = null;
     private static final String NEWLINE = System.lineSeparator();
     private String fileExtension = "";
@@ -52,9 +60,9 @@ public class Scheduler {
 
         StringBuffer stringBuffer = new StringBuffer();
 
-        Path DirPath = Paths.get("src/main/resources/files/");
-        //FileNotFoundException 방지
-        String filePath =  "/files";
+//        Path DirPath = Paths.get("src/main/resources/files/");
+        logger.info("file path in application.yml is {}", applicationConfig.getFilePath());
+        Path DirPath = Paths.get(applicationConfig.getFilePath());
 
         if(ObjectUtils.isEmpty(getListFiles(DirPath).get(0))) {
             throw new IOException("FILE_NONE_EXIST_EXCEPTION");
@@ -100,7 +108,7 @@ public class Scheduler {
      * @since 2022.08.21
      */
 //    @Scheduled(cron = "0 0 0/1 * * *") //1시간마다 도는 스케줄러
-    @Scheduled(cron = "0 0/3 * * * *") //1시간마다 도는 스케줄러
+    @Scheduled(cron = "0 0/1 * * * *") //1분마다 도는 스케줄러
     public void writeValueInFile() throws IOException {
         // TODO : check 후 제거
         logger.info("Start writeValueInFile... - path : {}");
@@ -132,8 +140,8 @@ public class Scheduler {
         appendWriteToFile(path, contentLine);
     }
 
-//    @Scheduled(cron = "0 0 00 * * *", zone = "Asia/Seoul")
-    @Scheduled(cron = "0 0/10 * * * *", zone = "Asia/Seoul")
+//    @Scheduled(cron = "0 0 00 * * *", zone = "Asia/Seoul") //자정마다 도는 스케줄러
+    @Scheduled(cron = "0 0/2 * * * *", zone = "Asia/Seoul") //2분마다 도는 스케줄러
     public void getFileListScheduler() {
 
         try {
@@ -236,4 +244,5 @@ public class Scheduler {
         Random random = new Random();
         return random.nextInt(max - min) + min;
     }
+
 }

@@ -2,6 +2,7 @@ package com.schedule.service.file;
 
 import com.schedule.domain.file.FileInfo;
 import com.schedule.domain.file.FileInfoCustomRepository;
+import com.schedule.domain.file.FileInfoEditor;
 import com.schedule.domain.file.FileInfoRepository;
 import com.schedule.dto.file.FileInfoResponseDto;
 import com.schedule.dto.file.FileInfoSaveRequestDto;
@@ -32,31 +33,32 @@ public class FileServiceImpl implements FileService{
 
     @Transactional
     @Override
-    public Long save(FileInfoSaveRequestDto fileInfoSaveRequestDto) {
-        return fileInfoRepository.save(fileInfoSaveRequestDto.toEntity()).getId();
+    public void save(FileInfoSaveRequestDto fileInfoSaveRequestDto) {
+        fileInfoRepository.save(fileInfoSaveRequestDto.toEntity());
     }
 
     @Transactional
     @Override
-    public Long deleteContentsByIds(List<Long> ids) {
-        return fileInfoCustomRepository.deleteByIds(ids);
+    public void deleteContentsByIds(List<Long> ids) {
+        fileInfoCustomRepository.deleteByIds(ids);
     }
 
     @Transactional
     @Override
-    public Long updateContentById(Long id, FileInfoUpdateRequestDto fileInfoUpdateRequestDto) {
+    public void updateContentById(Long id, FileInfoUpdateRequestDto request) {
 
         FileInfo fileInfo = fileInfoCustomRepository.findFileInfoById(id);
-        if(!ObjectUtils.isEmpty(fileInfo)) {
-            fileInfo.update(
-                    fileInfoUpdateRequestDto.getJoinMemberCnt(),
-                    fileInfoUpdateRequestDto.getLeaveMemberCnt(),
-                    fileInfoUpdateRequestDto.getPayment(),
-                    fileInfoUpdateRequestDto.getCost(),
-                    fileInfoUpdateRequestDto.getRevenue()
-            );
-            return id;
-        }
-        return 0L;
+
+        FileInfoEditor.FileInfoEditorBuilder fileInfoEditorBuilder = fileInfo.toEditor();
+
+        FileInfoEditor fileInfoEditor = fileInfoEditorBuilder
+                .leaveMemberCnt(request.getLeaveMemberCnt())
+                .joinMemberCnt(request.getJoinMemberCnt())
+                .payment(request.getPayment())
+                .cost(request.getCost())
+                .revenue(request.getRevenue())
+                .build();
+
+        fileInfo.update(fileInfoEditor);
     }
 }

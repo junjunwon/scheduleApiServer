@@ -57,4 +57,21 @@ public class FileInfo {
         this.cost = cost;
         this.revenue = revenue;
     }
+
+    public FileInfoEditor.FileInfoEditorBuilder toEditor() {
+        return FileInfoEditor.builder()
+                .joinMemberCnt(joinMemberCnt)
+                .leaveMemberCnt(leaveMemberCnt)
+                .payment(payment)
+                .cost(cost)
+                .revenue(revenue);
+    }
+
+    public void update(FileInfoEditor fileInfoEditor) {
+        joinMemberCnt = fileInfoEditor.getJoinMemberCnt();
+        leaveMemberCnt = fileInfoEditor.getLeaveMemberCnt();
+        payment = fileInfoEditor.getPayment();
+        cost = fileInfoEditor.getCost();
+        revenue = fileInfoEditor.getRevenue();
+    }
 }

@@ -1,0 +1,20 @@
+[2022-09-04 13:33:51]-[INFO]-success
+[2022-09-04 13:33:51]-[INFO]-[createUser]-[Request Time : 2022-09-04 13:33:51]
+[2022-09-04 13:33:51]-[INFO]-[createUser]-[Response Time : 2022-09-04 13:33:51]
+[2022-09-04 13:33:51]-[INFO]-[createUser]-[Duration of Time : 93211000ns]
+[2022-09-04 13:35:13]-[INFO]-success
+[2022-09-04 13:35:13]-[INFO]-[createUser]-[Request Time : 2022-09-04 13:35:13]
+[2022-09-04 13:35:13]-[INFO]-[createUser]-[Response Time : 2022-09-04 13:35:13]
+[2022-09-04 13:35:13]-[INFO]-[createUser]-[Duration of Time : 75554000ns]
+[2022-09-04 13:35:48]-[INFO]-success
+[2022-09-04 13:35:48]-[INFO]-[createUser]-[Request Time : 2022-09-04 13:35:48]
+[2022-09-04 13:35:48]-[INFO]-[createUser]-[Response Time : 2022-09-04 13:35:48]
+[2022-09-04 13:35:48]-[INFO]-[createUser]-[Duration of Time : 80342000ns]
+[2022-09-04 13:36:45]-[INFO]-success
+[2022-09-04 13:36:45]-[INFO]-[createUser]-[Request Time : 2022-09-04 13:36:42]
+[2022-09-04 13:36:45]-[INFO]-[createUser]-[Response Time : 2022-09-04 13:36:45]
+[2022-09-04 13:36:45]-[INFO]-[createUser]-[Duration of Time : 14601000ns]
+[2022-09-04 13:37:13]-[INFO]-success
+[2022-09-04 13:37:13]-[INFO]-[createUser]-[Request Time : 2022-09-04 13:37:13]
+[2022-09-04 13:37:13]-[INFO]-[createUser]-[Response Time : 2022-09-04 13:37:13]
+[2022-09-04 13:37:13]-[INFO]-[createUser]-[Duration of Time : 81139000ns]
