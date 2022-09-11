@@ -3,7 +3,6 @@ package com.schedule.service.file;
 import com.schedule.dto.file.FileInfoResponseDto;
 import com.schedule.dto.file.FileInfoSaveRequestDto;
 import com.schedule.dto.file.FileInfoUpdateRequestDto;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

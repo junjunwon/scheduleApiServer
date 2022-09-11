@@ -1,6 +1,5 @@
 package com.schedule.web.file;
 
-import com.schedule.common.response.ErrorResponse;
 import com.schedule.common.response.Response;
 import com.schedule.dto.file.FileInfoResponseDto;
 import com.schedule.dto.file.FileInfoSaveRequestDto;
@@ -13,19 +12,13 @@ import io.github.bucket4j.Refill;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequestMapping("/api")
