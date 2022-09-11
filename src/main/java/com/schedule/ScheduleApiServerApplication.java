@@ -1,5 +1,6 @@
 package com.schedule;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -12,15 +13,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 public class ScheduleApiServerApplication {
 
-	public static final String APPLICATION_LOCATIONS = "spring.config.location="
-//			+"/Users/wonjunho/Desktop/junho/develop/codingTest/daouTech/scheduleApiServer/application-prd.yml";
-			+"classpath:application.yml";
-//			+"classpath:application.properties";
-
 	public static void main(String[] args) {
-		new SpringApplicationBuilder(ScheduleApiServerApplication.class)
-				.properties(APPLICATION_LOCATIONS)
-						.run(args);
+		SpringApplication.run(ScheduleApiServerApplication.class, args);
 	}
 
 }

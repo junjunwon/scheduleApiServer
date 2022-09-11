@@ -11,8 +11,9 @@ spring:
     console:
       enabled: true
       path: /h2-console
-  profiles:
-    active: real
+  config:
+    activate:
+      on-profile: local
 logging:
   config: classpath:log4j2-spring.xml
 config:
