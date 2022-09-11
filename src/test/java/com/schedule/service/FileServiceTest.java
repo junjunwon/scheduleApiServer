@@ -4,6 +4,7 @@ import com.schedule.domain.file.FileInfo;
 import com.schedule.domain.file.FileInfoCustomRepository;
 import com.schedule.domain.file.FileInfoRepository;
 import com.schedule.dto.file.FileInfoResponseDto;
+import com.schedule.dto.file.FileInfoUpdateRequestDto;
 import com.schedule.service.file.FileService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,6 +52,37 @@ public class FileServiceTest {
         List<FileInfoResponseDto> response = fileService.findFileList();
 
         Assertions.assertEquals(request.getCost(), response.get(0).getCost());
+    }
+
+    @Test
+    @DisplayName("파일에 내용 수정 테스트")
+    void editContent() {
+        FileInfo request =
+                FileInfo.builder()
+                        .time(LocalDateTime.now()) //시간
+                        .joinMemberCnt(32) //가입자수
+                        .leaveMemberCnt(40) //탈퇴자수
+                        .payment(50_000) //결제금액
+                        .cost(40_000) //사용금액
+                        .revenue(30_000) //매출
+                        .build();
+
+        repository.save(request);
+
+        FileInfoUpdateRequestDto update =
+                FileInfoUpdateRequestDto.builder()
+                        .joinMemberCnt(99) //가입자수
+                        .leaveMemberCnt(99) //탈퇴자수
+                        .payment(99_000) //결제금액
+                        .cost(99_000) //사용금액
+                        .revenue(99_000) //매출
+                        .build();
+
+        fileService.updateContentById(request.getId(), update);
+
+        List<FileInfo> getList = customRepository.findFileList();
+
+        Assertions.assertEquals(99, getList.get(0).getJoinMemberCnt());
 
 
     }
