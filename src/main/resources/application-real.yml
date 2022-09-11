@@ -3,7 +3,7 @@
 #  filePath: /home/ec2-user/app/schedulerApiServer/applicationConfig
 config:
   allowedIps: 127.0.0.1, 127.0.0.3
-  filePath: /home/ec2-user/app/schedulerApiServer/applicationConfig
+  filePath: /home/ec2-user/app/schedulerApiServer/file
 spring:
   config:
     activate:
