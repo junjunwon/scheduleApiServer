@@ -11,9 +11,13 @@ spring:
     console:
       enabled: true
       path: /h2-console
-  config:
-    activate:
-      on-profile: local
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+#  config:
+#    activate:
+#      on-profile: local
 logging:
   config: classpath:log4j2-spring.xml
 config:

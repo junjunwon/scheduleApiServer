@@ -1,6 +1,8 @@
 package com.schedule.common.config;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -16,6 +18,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
+    private static final Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
+
     @Bean
     public AuthenticationProvider authenticationProvider() {
         return new CustomAuthenticationProvider();
@@ -23,6 +27,7 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        logger.info("WebSecurityConfig filterChain...");
         http.authorizeRequests()
                 .antMatchers("/api/**").hasRole("USER")
                 .anyRequest().authenticated()
@@ -35,6 +40,7 @@ public class WebSecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
+        logger.info("WebSecurityConfig webSecurityCustomizer...");
         return (web) -> {
         web.ignoring().antMatchers("/css/**", "/images/**", "/js/**", "/h2-console/**");
         };

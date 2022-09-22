@@ -4,6 +4,7 @@ import com.schedule.domain.file.FileInfo;
 import com.schedule.domain.file.FileInfoCustomRepository;
 import com.schedule.domain.file.FileInfoEditor;
 import com.schedule.domain.file.FileInfoRepository;
+import com.schedule.dto.file.FileInfoRequestDto;
 import com.schedule.dto.file.FileInfoResponseDto;
 import com.schedule.dto.file.FileInfoSaveRequestDto;
 import com.schedule.dto.file.FileInfoUpdateRequestDto;
@@ -23,10 +24,10 @@ public class FileServiceImpl implements FileService{
 
     @Transactional(readOnly = true)
     @Override
-    public List<FileInfoResponseDto> findFileList() {
+    public List<FileInfoResponseDto> findFileList(FileInfoRequestDto requestDto) {
         List<FileInfo> entityList = fileInfoCustomRepository.findFileList();
         List<FileInfoResponseDto> fileInfoResponseDtos =
-                entityList.stream().map(FileInfoResponseDto::new).collect(Collectors.toList());
+                entityList.stream().map(FileInfoResponseDto::new).toList();
         return fileInfoResponseDtos;
     }
 

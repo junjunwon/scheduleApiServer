@@ -41,6 +41,7 @@ class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        logger.info("CustomAuthenticationProvider authenticate...");
         WebAuthenticationDetails details = (WebAuthenticationDetails) authentication.getDetails();
         String userIp = details.getRemoteAddress();
         logger.info("Client Ip is ....{}", userIp);

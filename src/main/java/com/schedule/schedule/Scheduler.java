@@ -22,7 +22,6 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
@@ -43,6 +42,11 @@ public class Scheduler {
     private String seperator = "";
     private static boolean isCorrect;
     private static Map<String, String> map;
+
+    private final BasicFileHandler basicFileHandler;
+    private final ExcelFileHandler excelFileHandler;
+
+    private static FileHandlerInterface fileHandlerInterface;
     static {
         map = new HashMap<>() {{
             put("txt", "|");
@@ -59,16 +63,17 @@ public class Scheduler {
         logger.info("file path in application.yml is {}", applicationConfig.getFilePath());
         Path DirPath = Paths.get(applicationConfig.getFilePath());
 
-        if(ObjectUtils.isEmpty(getListFiles(DirPath).get(0))) {
+        if(ObjectUtils.isEmpty(getFile(DirPath))) {
             throw new IOException("FILE_NONE_EXIST_EXCEPTION");
         }
-        path = getListFiles(DirPath).get(0);
+        path = getFile(DirPath);
 
         // TODO : 클래스 경로에 inputList.txt파일이 정상적으로 쓰기/읽기 되는지 확인.
         //확장자 추출
-        fileExtension = getExtensionByGuava(path.getFileName().toString());
-        //구분자 추출
-        delimiter = map.get(fileExtension);
+        fileExtension = basicFileHandler.getExtensionByGuava(path.getFileName().toString());
+        getFileExecute(fileExtension);
+
+        delimiter = fileHandlerInterface.getDelimiter();
         seperator = delimiter;
         if(Objects.equals(delimiter, "|")) {
             stringBuffer.append("["); //특수문자 구분자를 위한 대괄호
@@ -78,22 +83,12 @@ public class Scheduler {
         }
     }
 
-    private List<Path> getListFiles(Path path) throws IOException {
+    private Path getFile(Path path) throws IOException {
         List<Path> getAllFiles;
-        List<Path> result = new ArrayList<>();
-
         try(Stream<Path> walk = Files.walk(path)) {
-            getAllFiles = walk.filter(Files::isRegularFile)
-                    .collect(Collectors.toList());
+            getAllFiles = walk.filter(Files::isRegularFile).toList();
         }
-
-        for(int i = 0; i < getAllFiles.size(); i++) {
-            Path element = getAllFiles.get(i);
-            fileExtension = getExtensionByGuava(element.getFileName().toString());
-
-            if(map.containsKey(fileExtension)) result.add(element);
-        }
-        return result;
+        return getAllFiles.get(0);
     }
 
     /**
@@ -240,4 +235,12 @@ public class Scheduler {
         return random.nextInt(max - min) + min;
     }
 
+    //TODO: Interface 분기를 이렇게 하는게 맞는지 점검 -> 피드백이 필요함 switch문을 통해 base interface에 구현체를 상속받아서 작업
+    private void getFileExecute(String fileExtension) {
+        switch (fileExtension) {
+            default -> fileHandlerInterface = basicFileHandler;
+            case "csv", "txt" -> fileHandlerInterface = basicFileHandler;
+            case "xlsx", "xls" -> fileHandlerInterface = excelFileHandler;
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package com.schedule.web.file;
 
 import com.schedule.common.response.Response;
+import com.schedule.dto.file.FileInfoRequestDto;
 import com.schedule.dto.file.FileInfoResponseDto;
 import com.schedule.dto.file.FileInfoSaveRequestDto;
 import com.schedule.dto.file.FileInfoUpdateRequestDto;
@@ -41,11 +42,11 @@ public class FileApiController {
     }
 
     @GetMapping("/fileList/list")
-    public ResponseEntity<Response> getFileList() {
+    public ResponseEntity<Response> getFileList(@ModelAttribute FileInfoRequestDto requestDto) {
 
         if(bucket.tryConsume(1)) {
 
-            List<FileInfoResponseDto> dtoList = fileService.findFileList();
+            List<FileInfoResponseDto> dtoList = fileService.findFileList(requestDto);
 
             Response response = new Response();
             response.setStatus(HttpStatus.OK);

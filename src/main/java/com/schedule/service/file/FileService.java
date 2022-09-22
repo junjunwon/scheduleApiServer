@@ -1,5 +1,6 @@
 package com.schedule.service.file;
 
+import com.schedule.dto.file.FileInfoRequestDto;
 import com.schedule.dto.file.FileInfoResponseDto;
 import com.schedule.dto.file.FileInfoSaveRequestDto;
 import com.schedule.dto.file.FileInfoUpdateRequestDto;
@@ -16,7 +17,7 @@ public interface FileService {
      * @since 2022.08.22
      * @return
      */
-    List<FileInfoResponseDto> findFileList();
+    List<FileInfoResponseDto> findFileList(FileInfoRequestDto requestDto);
 
     /**
      * content 저장

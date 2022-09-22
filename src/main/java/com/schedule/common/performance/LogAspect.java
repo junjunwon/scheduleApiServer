@@ -26,6 +26,7 @@ public class LogAspect {
 
     @Around("publicTarget() || SchedulerTarget()")
     public Object PerformanceAdvice(ProceedingJoinPoint joinPoint) throws  Throwable {
+        logger.info("LogAspect PerformanceAdvice...");
         Logger logger = LogManager.getLogger(joinPoint.getSignature().getDeclaringTypeName());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

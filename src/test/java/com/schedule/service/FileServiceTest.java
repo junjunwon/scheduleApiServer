@@ -3,6 +3,7 @@ package com.schedule.service;
 import com.schedule.domain.file.FileInfo;
 import com.schedule.domain.file.FileInfoCustomRepository;
 import com.schedule.domain.file.FileInfoRepository;
+import com.schedule.dto.file.FileInfoRequestDto;
 import com.schedule.dto.file.FileInfoResponseDto;
 import com.schedule.dto.file.FileInfoUpdateRequestDto;
 import com.schedule.service.file.FileService;
@@ -33,6 +34,8 @@ public class FileServiceTest {
         repository.deleteAll();
     }
 
+
+
     @Test
     @DisplayName("파일에 내용 저장 테스트")
     void saveContent() {
@@ -49,7 +52,13 @@ public class FileServiceTest {
 
         repository.save(request);
 
-        List<FileInfoResponseDto> response = fileService.findFileList();
+        //when
+        FileInfoRequestDto requestDto = FileInfoRequestDto.builder()
+                .page(1)
+                .size(10)
+                .build();
+
+        List<FileInfoResponseDto> response = fileService.findFileList(requestDto);
 
         Assertions.assertEquals(request.getCost(), response.get(0).getCost());
     }

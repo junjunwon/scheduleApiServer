@@ -198,8 +198,7 @@ public class FileApiControllerTest {
                             .payment(90_000 + i)
                             .revenue(300 + i)
                             .build();
-                })
-                .collect(Collectors.toList());
+                }).toList();
         fileInfoRepository.saveAll(requestFileInfos);
 
         mvc.perform(delete("/api/file/delete/{deleteId}", requestFileInfos.get(0).getId()))
