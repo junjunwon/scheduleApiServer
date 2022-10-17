@@ -1,6 +1,7 @@
 package com.schedule.schedule;
 
 import com.schedule.common.config.ApplicationConfig;
+import com.schedule.common.enums.EnumSchedule;
 import com.schedule.domain.file.FileInfoCustomRepository;
 import com.schedule.dto.file.FileInfoSaveRequestDto;
 import com.schedule.service.file.FileService;
@@ -39,7 +40,6 @@ public class Scheduler {
     private static final String NEWLINE = System.lineSeparator();
     private String fileExtension = "";
     private String delimiter = "";
-    private String seperator = "";
     private static boolean isCorrect;
     private static Map<String, String> map;
 
@@ -73,14 +73,8 @@ public class Scheduler {
         fileExtension = basicFileHandler.getExtensionByGuava(path.getFileName().toString());
         getFileExecute(fileExtension);
 
+        // delimiter : 파일에 저장하기 위한 구분자
         delimiter = fileHandlerInterface.getDelimiter();
-        seperator = delimiter;
-        if(Objects.equals(delimiter, "|")) {
-            stringBuffer.append("["); //특수문자 구분자를 위한 대괄호
-            stringBuffer.append(delimiter);
-            stringBuffer.append("]");
-            seperator = stringBuffer.toString();
-        }
     }
 
     private Path getFile(Path path) throws IOException {
@@ -155,7 +149,12 @@ public class Scheduler {
         int isExist;
 
         for(String content : contentList) {
-            String[] contentLine = content.split(seperator);
+            /**
+             * EnumSchedule.setSpecialDelimiter(delimiter)
+             * 메타데이터 특수문자가 아닐 경우 일반 delimiter로 return
+             * 그렇지 않을 경우 [delimiter]로 return
+             */
+            String[] contentLine = content.split(EnumSchedule.setSpecialDelimiter(delimiter));
             time = LocalDateTime.parse(contentLine[0], formatter);
             isExist = fileInfoCustomRepository.findEqualDateTime(time);
             if(isExist == 0) {
@@ -180,7 +179,7 @@ public class Scheduler {
 
     private boolean checkContentFiles(List<String> contentList) {
         for(String content : contentList) {
-            String[] contentLine = content.split(seperator);
+            String[] contentLine = content.split(EnumSchedule.setSpecialDelimiter(delimiter));
             //값이 누락된 경우
             if(contentLine.length != 6) {
                 return false;
