@@ -22,4 +22,5 @@ logging:
   config: classpath:log4j2-spring.xml
 config:
   allowedIps: 127.0.0.1, 127.0.0.3
-  filePath: /Users/wonjunho/Desktop/junho/develop/codingTest/daouTech/files
+  filePath: /Users/wonjunho/Desktop/junho/develop/codingTest/daouTech/scheduleApiServer/inputFolder
+

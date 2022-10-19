@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 public class BasicFileHandler implements FileHandlerInterface {
     @Override
     public String getDelimiter() {
-        return ",";
+        return "|";
     }
 
     @Override

@@ -3,6 +3,14 @@ package com.schedule.common.enums;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Enum 클래스 잘 정리된 사이트
+ * 출처 : https://velog.io/@kyle/%EC%9E%90%EB%B0%94-Enum-%EA%B8%B0%EB%B3%B8-%EB%B0%8F-%ED%99%9C%EC%9A%A9
+ * 조금 더 공부해보니 Enum class는 다양한 상수 데이터가 존재할때 쓰는게 더 유용하다.
+ * 그래서 Enum으로 하지 않고 delimiter 의 경우 static final arrayList에 담아서 처리해주는 정도로 작업하는게 더 깔끔하다.
+ *  -> 좋은 코드가 아닌 것 같다는 피드백을 받음.
+ */
+@Deprecated
 public enum EnumSchedule {
     DELIMITER("delimiter",
             Arrays.asList("^", "$", "(?!)", "|", "[]", "{}", "()", ".", "*", "+", "?",

@@ -1,14 +1,12 @@
 package com.schedule.schedule;
 
 import com.schedule.common.config.ApplicationConfig;
-import com.schedule.common.enums.EnumSchedule;
 import com.schedule.domain.file.FileInfoCustomRepository;
 import com.schedule.dto.file.FileInfoSaveRequestDto;
 import com.schedule.service.file.FileService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -33,34 +31,21 @@ public class Scheduler {
     private final FileService fileService;
     private final FileInfoCustomRepository fileInfoCustomRepository;
     private static Path path;
-
     private final ApplicationConfig applicationConfig;
-
-    private static ClassPathResource resourceDir = null;
-    private static final String NEWLINE = System.lineSeparator();
-    private String fileExtension = "";
-    private String delimiter = "";
-    private static boolean isCorrect;
-    private static Map<String, String> map;
-
     private final BasicFileHandler basicFileHandler;
     private final ExcelFileHandler excelFileHandler;
-
     private static FileHandlerInterface fileHandlerInterface;
-    static {
-        map = new HashMap<>() {{
-            put("txt", "|");
-            put("csv", ",");
-            // TODO : 파일 형식 확장성 고려
-        }};
-    }
 
+    private String DELIMETER = "";
+    //변하지 않는 구분자
+    private static final List<String> delimeterList = Arrays.asList("^", "$", "(?!)", "|", "[]", "{}", "()", ".", "*", "+", "?",
+            "\\d", "\\D", "\\w", "\\W", "\\s", "\\S");
     @PostConstruct
     private void setInitData() throws IOException {
 
-        StringBuffer stringBuffer = new StringBuffer();
-
         logger.info("file path in application.yml is {}", applicationConfig.getFilePath());
+        String fileExtension = "";
+
         Path DirPath = Paths.get(applicationConfig.getFilePath());
 
         if(ObjectUtils.isEmpty(getFile(DirPath))) {
@@ -68,13 +53,12 @@ public class Scheduler {
         }
         path = getFile(DirPath);
 
-        // TODO : 클래스 경로에 inputList.txt파일이 정상적으로 쓰기/읽기 되는지 확인.
         //확장자 추출
         fileExtension = basicFileHandler.getExtensionByGuava(path.getFileName().toString());
         getFileExecute(fileExtension);
 
         // delimiter : 파일에 저장하기 위한 구분자
-        delimiter = fileHandlerInterface.getDelimiter();
+        DELIMETER = fileHandlerInterface.getDelimiter();
     }
 
     private Path getFile(Path path) throws IOException {
@@ -97,6 +81,8 @@ public class Scheduler {
         // TODO : check 후 제거
         logger.info("Start writeValueInFile... - path : {}");
 
+        String NEWLINE = System.lineSeparator();
+
         setInitData();
 
         StringBuffer stringBuffer = new StringBuffer();
@@ -110,11 +96,11 @@ public class Scheduler {
         int revenue = getRandomNumberUsingNextInt(1000, 100000);
 
         String contentLine = stringBuffer
-                .append(hourOfToday).append(delimiter)
-                .append(joinMemberCnt).append(delimiter)
-                .append(leaveMemberCnt).append(delimiter)
-                .append(payment).append(delimiter)
-                .append(cost).append(delimiter)
+                .append(hourOfToday).append(DELIMETER)
+                .append(joinMemberCnt).append(DELIMETER)
+                .append(leaveMemberCnt).append(DELIMETER)
+                .append(payment).append(DELIMETER)
+                .append(cost).append(DELIMETER)
                 .append(revenue)
                 .append(NEWLINE)
                 .toString();
@@ -128,6 +114,7 @@ public class Scheduler {
     @Scheduled(cron = "0 0/2 * * * *", zone = "Asia/Seoul") //2분마다 도는 스케줄러
     public void getFileListScheduler() {
 
+        boolean isCorrect;
         try {
             List<String> contentList = Files.readAllLines(path);
             //체크
@@ -150,11 +137,11 @@ public class Scheduler {
 
         for(String content : contentList) {
             /**
-             * EnumSchedule.setSpecialDelimiter(delimiter)
+             * setSpecialDelimiter(delimiter)
              * 메타데이터 특수문자가 아닐 경우 일반 delimiter로 return
              * 그렇지 않을 경우 [delimiter]로 return
              */
-            String[] contentLine = content.split(EnumSchedule.setSpecialDelimiter(delimiter));
+            String[] contentLine = content.split(setSpecialDelimiter(DELIMETER));
             time = LocalDateTime.parse(contentLine[0], formatter);
             isExist = fileInfoCustomRepository.findEqualDateTime(time);
             if(isExist == 0) {
@@ -179,7 +166,7 @@ public class Scheduler {
 
     private boolean checkContentFiles(List<String> contentList) {
         for(String content : contentList) {
-            String[] contentLine = content.split(EnumSchedule.setSpecialDelimiter(delimiter));
+            String[] contentLine = content.split(setSpecialDelimiter(DELIMETER));
             //값이 누락된 경우
             if(contentLine.length != 6) {
                 return false;
@@ -240,6 +227,22 @@ public class Scheduler {
             default -> fileHandlerInterface = basicFileHandler;
             case "csv", "txt" -> fileHandlerInterface = basicFileHandler;
             case "xlsx", "xls" -> fileHandlerInterface = excelFileHandler;
+        }
+    }
+
+    /**
+     * split() 함수 사용 시 위 표에 있는 메타문자로 들어가는 특수문자를 구분자로 사용할 때는
+     * 메타문자 앞에 \(역슬래쉬) 2번 혹은 [메타문자]를 붙여 이스케이프처리 해주면 된다.
+     */
+    public static String setSpecialDelimiter(String delimiter) {
+        StringBuffer stringBuffer = new StringBuffer();
+        if(delimeterList.contains(delimiter)) {
+            stringBuffer.append("["); //특수문자 구분자를 위한 대괄호
+            stringBuffer.append(delimiter);
+            stringBuffer.append("]");
+            return stringBuffer.toString();
+        } else {
+            return delimiter;
         }
     }
 }
